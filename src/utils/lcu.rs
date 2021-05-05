@@ -22,6 +22,7 @@ impl LCUClient {
                 .send()?),
             Method::POST => Ok(attohttpc::post(&format!("{}{}", self.base, endpoint.as_endpoint()))
                 .header("Authorization", &self.token)
+                .header_append("Content-Type", "application/json")
                 .danger_accept_invalid_certs(true)
                 .text(payload)
                 .send()?),
