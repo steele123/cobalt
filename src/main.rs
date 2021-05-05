@@ -6,6 +6,10 @@
     dead_code
 )]
 
+use std::time::Duration;
+
+use bindings::Windows::Win32::KeyboardAndMouseInput::GetAsyncKeyState;
+
 use crate::utils::process::league_exists;
 
 mod utils;
@@ -31,17 +35,32 @@ fn main() -> eyre::Result<()> {
 
     let lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap();
 
-    // TODO: Probably should have a way to constantly check if the league client
-    // actually is still open
+    // TODO: Need a thread to check if the league client is open.
 
-    println!("Enter anything to dodge...");
+    println!("Press D to dodge the lobby...");
 
-    // TODO: Make this better
+    // TODO: Make it only dodge if the user is in queue
     loop {
-        let mut line = String::new();
-        std::io::stdin().read_line(&mut line)?;
-        println!("Lobby dodger initiated");
-        lcu.crash_lobby().unwrap();
-        println!("Lobby was dodged successfully");
+        if get_key(Keys::D as _) {
+            lcu.crash_lobby();
+        }
+
+        // if this isn't working make it sleep for less time
+        std::thread::sleep(Duration::from_secs(1));
+    }
+}
+
+// TODO: Export the functions down here into a module
+enum Keys {
+    D = 0x44,
+}
+
+// key codes https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+// this wrapper will return true if its held down OR pressed
+fn get_key(key: i32) -> bool { unsafe { GetAsyncKeyState(key) != 0 } }
+
+fn lcu_watcher() {
+    loop {
+        if league_exists() {}
     }
 }
