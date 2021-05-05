@@ -10,16 +10,18 @@ use std::time::Duration;
 
 use crate::utils::{input::*, process::league_exists};
 
+use utils::toast;
+
 mod utils;
 
 fn main() -> eyre::Result<()> {
-    println!("Trying to find the LeagueClient.exe process...");
+    toast::send("Trying to find the LeagueClient.exe process...")?;
 
     let sw = stopwatch::Stopwatch::start_new();
 
     loop {
         if league_exists() {
-            println!("Found LeagueClient.exe in {}ms!", sw.elapsed_ms());
+            toast::send(&format!("Found LeagueClient.exe in {}ms!", sw.elapsed_ms()))?;
             break;
         }
 
