@@ -42,12 +42,12 @@ impl LCUClient {
     }
 
     pub async fn crash_lobby(&self) -> Result<()> {
-        let cancel_lobby_response: Response = lcu
+        let cancel_lobby_response = self
             .send(Endpoints::CancelLobby, reqwest::Method::POST, "{}".into())
             .await
             .unwrap();
 
-        let quick_search_response = lcu
+        let quick_search_response = self
             .send(Endpoints::QuickSeach, reqwest::Method::POST, r#"{"queueId": 1110}"#.into())
             .await
             .unwrap();

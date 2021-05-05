@@ -15,6 +15,29 @@ pub fn convert_windows_string<'a, const N: usize>(string: [CHAR; N]) -> Result<&
 }
 
 pub fn get_lock_file_path() -> Result<String> {
+    let process_id = get_process_id_by_name("LeagueClient.exe".into())?;
+
+    let module_snapshot = unsafe { CreateToolhelp32Snapshot(CREATE_TOOLHELP_SNAPSHOT_FLAGS::TH32CS_SNAPMODULE, process_id) };
+
+    let mut module_entry = MODULEENTRY32 {
+        dwSize: std::mem::size_of::<MODULEENTRY32>() as u32,
+        ..Default::default()
+    };
+
+    if unsafe { Module32First(module_snapshot, &mut module_entry).into() } {
+        Ok(convert_windows_string(module_entry.szExePath)?.into())
+    } else {
+        Err(Error::last_os_error().into())
+    }
+}
+
+pub fn league_exists() -> bool {
+    let process_id = get_process_id_by_name("LeagueClient.exe".into()).unwrap();
+
+    process_id != 0
+}
+
+pub fn get_process_id_by_name(process_name: String) -> Result<std::os::raw::c_ulong> {
     let mut process_id: std::os::raw::c_ulong = 0;
 
     let snapshot = unsafe { CreateToolhelp32Snapshot(CREATE_TOOLHELP_SNAPSHOT_FLAGS::TH32CS_SNAPPROCESS, process_id) };
@@ -31,7 +54,7 @@ pub fn get_lock_file_path() -> Result<String> {
     if unsafe { Process32First(snapshot, &mut entry).into() } {
         process_id = loop {
             let current_name = unsafe { convert_windows_string(entry.szExeFile) }?;
-            if current_name == "LeagueClient.exe" {
+            if current_name == process_name {
                 break entry.th32ProcessID;
             }
 
@@ -45,20 +68,5 @@ pub fn get_lock_file_path() -> Result<String> {
         }
     }
 
-    if process_id == 0 {
-        return Err(Error::last_os_error().into());
-    }
-
-    let module_snapshot = unsafe { CreateToolhelp32Snapshot(CREATE_TOOLHELP_SNAPSHOT_FLAGS::TH32CS_SNAPMODULE, process_id) };
-
-    let mut module_entry = MODULEENTRY32 {
-        dwSize: std::mem::size_of::<MODULEENTRY32>() as u32,
-        ..Default::default()
-    };
-
-    if unsafe { Module32First(module_snapshot, &mut module_entry).into() } {
-        Ok(convert_windows_string(module_entry.szExePath)?.into())
-    } else {
-        Err(Error::last_os_error().into())
-    }
+    Ok(process_id)
 }
