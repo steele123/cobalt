@@ -51,7 +51,7 @@ fn main() -> eyre::Result<()> {
 
             if get_key_press(Key::B) {
                 println!("Pressed Ctrl+B");
-                lcu.send(&Endpoints::AramBoost, &Method::POST, "");
+                lcu.send(&Endpoints::AramBoost, &Method::POST, "")?;
             }
         }
 
