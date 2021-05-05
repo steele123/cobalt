@@ -1,13 +1,7 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::perf)]
+#![allow(clippy::cast_possible_truncation, clippy::module_name_repetitions, non_snake_case)]
 
-use std::io::{Read, Write};
-
-use reqwest::Response;
-
-use crate::utils::{
-    lcu::{Endpoints, LCUClient},
-    process::league_exists,
-};
+use crate::utils::process::league_exists;
 
 mod utils;
 
@@ -24,7 +18,7 @@ async fn main() -> eyre::Result<()> {
         }
 
         // slow down loop a bit
-        tokio::time::sleep(tokio::time::Duration::from_secs(2));
+        tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
     }
 
     let path = utils::process::get_lock_file_path().unwrap();
@@ -41,7 +35,7 @@ async fn main() -> eyre::Result<()> {
     // TODO: Make this better
     loop {
         let mut line = String::new();
-        std::io::stdin().read_line(&mut line);
+        std::io::stdin().read_line(&mut line)?;
         println!("Lobby dodger initiated");
         lcu.crash_lobby().await.unwrap();
         println!("Lobby was dodged successfully");
