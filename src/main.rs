@@ -8,9 +8,7 @@
 
 use std::time::Duration;
 
-use bindings::Windows::Win32::KeyboardAndMouseInput::GetAsyncKeyState;
-
-use crate::utils::process::league_exists;
+use crate::utils::{input::*, process::league_exists};
 
 mod utils;
 
@@ -59,24 +57,6 @@ fn main() -> eyre::Result<()> {
         std::thread::sleep(Duration::from_millis(500));
     }
 }
-
-// TODO: Export the functions down here into a module
-enum Key {
-    D = 0x44,
-    B = 0x42,
-    CONTROL = 0x11,
-}
-
-// key codes https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-// this wrapper will return true if its held down OR pressed
-// GetAsyncKeyState is retarded and will return -32767 if key is held, 0 if key
-// is not touched and 1 if key is only pressed
-
-fn get_key_hold(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) == -32767 } }
-
-fn get_key_press(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) == 1 } }
-
-fn get_key_press_or_hold(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) != 0 } }
 
 fn lcu_watcher() {
     loop {
