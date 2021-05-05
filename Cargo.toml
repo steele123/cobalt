@@ -1,0 +1,16 @@
+[package]
+name = "kataRUST"
+version = "0.1.0"
+authors = ["Tyler Hill <tyler@oxide.fi>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "1.5.0", features = [ "full" ] }
+reqwest = "0.11.3"
+base64 = "0.13.0"
+eyre = "0.6.5"
+bindings = { path = "bindings" }
+iced = { version = "0.3.0", default-features = false, features = [ "glow", "default_system_font"] }
+lazy_static = "1.4.0"
