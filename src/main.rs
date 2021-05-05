@@ -9,19 +9,20 @@
 use std::time::Duration;
 
 use bindings::Windows::Win32::KeyboardAndMouseInput::GetAsyncKeyState;
+use utils::toast;
 
 use crate::utils::process::league_exists;
 
 mod utils;
 
 fn main() -> eyre::Result<()> {
-    println!("Trying to find the LeagueClient.exe process...");
+    toast::send("Trying to find the LeagueClient.exe process...")?;
 
     let sw = stopwatch::Stopwatch::start_new();
 
     loop {
         if league_exists() {
-            println!("Found LeagueClient.exe in {}ms!", sw.elapsed_ms());
+            toast::send(&format!("Found LeagueClient.exe in {}ms!", sw.elapsed_ms()))?;
             break;
         }
 
