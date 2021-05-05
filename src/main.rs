@@ -41,7 +41,7 @@ fn main() -> eyre::Result<()> {
 
     // TODO: Make it only dodge if the user is in queue
     loop {
-        if get_key(Keys::D as _) {
+        if get_key_press(Keys::D as _) {
             lcu.crash_lobby()?;
         }
 
@@ -57,7 +57,13 @@ enum Keys {
 
 // key codes https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 // this wrapper will return true if its held down OR pressed
-fn get_key(key: i32) -> bool { unsafe { GetAsyncKeyState(key) != 0 } }
+// GetAsyncKeyState is retarded and will return -32767 if key is held, 0 if key
+// is not touched and 1 if key is only pressed
+fn get_key_hold(key: i32) -> bool { unsafe { GetAsyncKeyState(key) != -32767 } }
+
+fn get_key_press(key: i32) -> bool { unsafe { GetAsyncKeyState(key) != 1 } }
+
+fn get_key_press_or_hold(key: i32) -> bool { unsafe { GetAsyncKeyState(key) != 0 } }
 
 fn lcu_watcher() {
     loop {
