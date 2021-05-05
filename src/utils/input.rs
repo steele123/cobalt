@@ -1,6 +1,6 @@
 use bindings::Windows::Win32::KeyboardAndMouseInput::GetAsyncKeyState;
 
-enum Key {
+pub enum Key {
     D = 0x44,
     B = 0x42,
     CONTROL = 0x11,
