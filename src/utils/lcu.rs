@@ -1,5 +1,6 @@
-use attohttpc::Response;
 use eyre::Result;
+use ureq::Response;
+use winrt_notification::{Duration as WinDur, Toast};
 
 pub struct LCUClient {
     base: String,
@@ -16,25 +17,25 @@ impl LCUClient {
 
     pub fn send(&self, endpoint: &Endpoints, method: &Method, payload: &str) -> Result<Response> {
         match method {
-            Method::GET => Ok(attohttpc::get(&format!("{}{}", self.base, endpoint.as_endpoint()))
-                .header("Authorization", &self.token)
-                .danger_accept_invalid_certs(true)
-                .send()?),
-            Method::POST => Ok(attohttpc::post(&format!("{}{}", self.base, endpoint.as_endpoint()))
-                .header("Authorization", &self.token)
-                .header_append("Content-Type", "application/json")
-                .danger_accept_invalid_certs(true)
-                .text(payload)
-                .send()?),
+            Method::GET => Ok(ureq::get(&format!("{}{}", self.base, endpoint.as_endpoint()))
+                .set("Authorization", &self.token)
+                .call()?),
+            Method::POST => Ok(ureq::post(&format!("{}{}", self.base, endpoint.as_endpoint()))
+                .set("Authorization", &self.token)
+                .send_string(payload)?),
         }
     }
 
     pub fn crash_lobby(&self) -> Result<()> {
-        let _cancel_lobby_response = self.send(&Endpoints::CancelLobby, &Method::POST, "{}").unwrap();
+        let _cancel_lobby_response = self.send(&Endpoints::CancelLobby, &Method::POST, "{}")?;
 
-        let _quick_search_response = self
-            .send(&Endpoints::QuickSeach, &Method::POST, r#"{"queueId": 1110}"#)
-            .unwrap();
+        let _quick_search_response = self.send(&Endpoints::QuickSeach, &Method::POST, r#"{"queueId": 1110}"#)?;
+
+        Toast::new(Toast::POWERSHELL_APP_ID)
+            .title("kataRUST")
+            .text1("Lobby has been dodged, you max exit the TFT game after about 45 seconds.")
+            .duration(WinDur::Short)
+            .show()?;
 
         Ok(())
     }
