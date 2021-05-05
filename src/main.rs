@@ -1,12 +1,16 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::perf)]
-#![allow(clippy::cast_possible_truncation, clippy::module_name_repetitions, non_snake_case)]
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::module_name_repetitions,
+    non_snake_case,
+    dead_code
+)]
 
 use crate::utils::process::league_exists;
 
 mod utils;
 
-#[tokio::main]
-async fn main() -> eyre::Result<()> {
+fn main() -> eyre::Result<()> {
     println!("Trying to find the LeagueClient.exe process...");
 
     let sw = stopwatch::Stopwatch::start_new();
@@ -18,7 +22,7 @@ async fn main() -> eyre::Result<()> {
         }
 
         // slow down loop a bit
-        tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+        std::thread::sleep(std::time::Duration::from_secs(2));
     }
 
     let path = utils::process::get_lock_file_path().unwrap();
@@ -37,7 +41,7 @@ async fn main() -> eyre::Result<()> {
         let mut line = String::new();
         std::io::stdin().read_line(&mut line)?;
         println!("Lobby dodger initiated");
-        lcu.crash_lobby().await.unwrap();
+        lcu.crash_lobby().unwrap();
         println!("Lobby was dodged successfully");
     }
 }

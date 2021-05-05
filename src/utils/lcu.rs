@@ -1,55 +1,35 @@
 use eyre::Result;
-use reqwest::{Method, Response};
+use ureq::Response;
 
 pub struct LCUClient {
     base: String,
-    client: reqwest::Client,
+    token: String,
 }
 
 impl LCUClient {
     pub fn new(token: &str, port: i32) -> Result<Self> {
-        let mut headmap = reqwest::header::HeaderMap::new();
-        headmap.insert(
-            "Authorization",
-            format!("Basic {}", base64::encode(format!("riot:{}", token))).parse()?,
-        );
-
         Ok(Self {
             base: format!("https://127.0.0.1:{}", port),
-            client: reqwest::ClientBuilder::new()
-                .default_headers(headmap)
-                .danger_accept_invalid_certs(true)
-                .build()?,
+            token: format!("Basic {}", base64::encode(format!("riot:{}", token))),
         })
     }
 
-    pub async fn send(&self, endpoint: Endpoints, method: Method, payload: String) -> Result<Response> {
+    pub fn send(&self, endpoint: &Endpoints, method: &Method, payload: &str) -> Result<Response> {
         match method {
-            Method::GET => Ok(self
-                .client
-                .get(&format!("{}{}", self.base, endpoint.as_endpoint()))
-                .body(payload)
-                .send()
-                .await?),
-            Method::POST => Ok(self
-                .client
-                .post(&format!("{}{}", self.base, endpoint.as_endpoint()))
-                .body(payload)
-                .send()
-                .await?),
-            _ => Err(eyre::eyre!("what in the hell are u tryna do")),
+            Method::GET => Ok(ureq::get(&format!("{}{}", self.base, endpoint.as_endpoint()))
+                .set("Authorization", &self.token)
+                .call()?),
+            Method::POST => Ok(ureq::post(&format!("{}{}", self.base, endpoint.as_endpoint()))
+                .set("Authorization", &self.token)
+                .send_string(payload)?),
         }
     }
 
-    pub async fn crash_lobby(&self) -> Result<()> {
-        let _cancel_lobby_response = self
-            .send(Endpoints::CancelLobby, reqwest::Method::POST, "{}".into())
-            .await
-            .unwrap();
+    pub fn crash_lobby(&self) -> Result<()> {
+        let _cancel_lobby_response = self.send(&Endpoints::CancelLobby, &Method::POST, "{}").unwrap();
 
         let _quick_search_response = self
-            .send(Endpoints::QuickSeach, reqwest::Method::POST, r#"{"queueId": 1110}"#.into())
-            .await
+            .send(&Endpoints::QuickSeach, &Method::POST, r#"{"queueId": 1110}"#)
             .unwrap();
 
         Ok(())
@@ -59,6 +39,11 @@ impl LCUClient {
 pub enum Endpoints {
     CancelLobby,
     QuickSeach,
+}
+
+pub enum Method {
+    POST,
+    GET,
 }
 
 impl Endpoints {
