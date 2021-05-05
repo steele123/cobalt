@@ -42,7 +42,7 @@ fn main() -> eyre::Result<()> {
     // TODO: Make it only dodge if the user is in queue
     loop {
         if get_key(Keys::D as _) {
-            lcu.crash_lobby();
+            lcu.crash_lobby()?;
         }
 
         // if this isn't working make it sleep for less time
