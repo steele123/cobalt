@@ -1,36 +1,39 @@
-use std::{thread, time::Duration};
+use std::{
+    sync::mpsc::{channel, Receiver, Sender},
+    thread,
+    time::Duration,
+};
 
 use crate::utils::process::league_exists;
 
-pub static WORKER: ProcessWorker = ProcessWorker { connected: true };
-
 const SLEEP_TIME_MS: u64 = 1000;
 
-pub struct ProcessWorker {
-    pub connected: bool,
+pub enum Events {
+    Connected,
+    Disconnected,
 }
 
-impl ProcessWorker {
-    fn watch(&mut self) {
-        loop {
-            let league_exists = league_exists();
+pub fn spawn() -> Receiver<Events> {
+    let (tx, rx) = channel();
 
-            if league_exists && self.connected {
-                self.sleep();
-                continue;
+    thread::spawn(move || watch(&tx));
+
+    rx
+}
+fn sleep() { thread::sleep(Duration::from_millis(SLEEP_TIME_MS)); }
+
+fn watch(tx: &Sender<Events>) {
+    let mut state = true;
+    loop {
+        if state != league_exists() {
+            if state {
+                tx.send(Events::Disconnected).unwrap()
+            } else {
+                tx.send(Events::Connected).unwrap()
             }
-
-            if league_exists {
-                self.connected = true;
-            } else if self.connected {
-                self.connected = false;
-            }
-
-            self.sleep();
+            state = league_exists();
         }
+
+        sleep();
     }
-
-    pub fn spawn(&'static mut self) { thread::spawn(move || self.watch()); }
-
-    fn sleep(&self) { thread::sleep(Duration::from_millis(SLEEP_TIME_MS)); }
 }

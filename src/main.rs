@@ -8,14 +8,13 @@
 
 use std::time::Duration;
 
+use process_worker::Events;
 use utils::{
     input::{get_key_press, get_key_press_or_hold, Key},
     lcu::{Endpoints, Method},
     process::league_exists,
     toast,
 };
-
-use crate::process_worker::WORKER;
 
 mod utils;
 
@@ -44,7 +43,17 @@ fn main() -> eyre::Result<()> {
 
     // TODO: Need a thread to check if the league client is open.
 
-    WORKER.spawn();
+    let rx = process_worker::spawn();
+
+    // This is blocking and should be handled as such.
+    /*
+    while let Ok(event) = rx.recv() {
+        match event {
+            Events::Connected => {},
+            Events::Disconnected => {},
+        }
+    }
+    */
 
     println!("CONTROLS\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
 
