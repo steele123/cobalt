@@ -46,6 +46,7 @@ impl LCUClient {
 pub enum Endpoints {
     CancelLobby,
     QuickSearch,
+    AramBoost,
 }
 
 pub enum Method {
@@ -58,6 +59,9 @@ impl Endpoints {
         match self {
             Endpoints::CancelLobby => "/lol-lobby/v1/lobby/custom/cancel-champ-select",
             Endpoints::QuickSearch => "/lol-lobby/v2/matchmaking/quick-search",
+            Endpoints::AramBoost => {
+                r#"/lol-login/v1/session/invoke?destination=lcdsServiceProxy&method=call&args=["","teambuilder-draft","activateBattleBoostV1",""]"#
+            },
         }
     }
 }
