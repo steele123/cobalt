@@ -1,5 +1,7 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::perf)]
 
+use std::io::{Read, Write};
+
 use reqwest::Response;
 
 use crate::utils::{
@@ -31,9 +33,16 @@ async fn main() -> eyre::Result<()> {
 
     let lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap();
 
-    lcu.crash_lobby().await;
+    // TODO: Probably should have a way to constantly check if the league client
+    // actually is still open
 
-    println!("Champ Select lobby was crashed successfully");
+    println!("Enter anything to dodge...");
 
-    Ok(())
+    // TODO: Make this better
+    loop {
+        let mut line = String::new();
+        std::io::stdin().read_line(&mut line);
+        lcu.crash_lobby().await.unwrap();
+        println!("Champ Select lobby was crashed successfully");
+    }
 }

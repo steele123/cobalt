@@ -13,5 +13,4 @@ stopwatch = "0.0.7"
 base64 = "0.13.0"
 eyre = "0.6.5"
 bindings = { path = "bindings" }
-iced = { version = "0.3.0", default-features = false, features = [ "glow", "default_system_font"] }
-lazy_static = "1.4.0"
+crossterm = "0.19.0"
