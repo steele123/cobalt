@@ -1,5 +1,5 @@
 use eyre::Result;
-use reqwest::{Body, Method, Response};
+use reqwest::{Method, Response};
 
 pub struct LCUClient {
     base: String,
@@ -42,12 +42,12 @@ impl LCUClient {
     }
 
     pub async fn crash_lobby(&self) -> Result<()> {
-        let cancel_lobby_response = self
+        let _cancel_lobby_response = self
             .send(Endpoints::CancelLobby, reqwest::Method::POST, "{}".into())
             .await
             .unwrap();
 
-        let quick_search_response = self
+        let _quick_search_response = self
             .send(Endpoints::QuickSeach, reqwest::Method::POST, r#"{"queueId": 1110}"#.into())
             .await
             .unwrap();
@@ -59,7 +59,6 @@ impl LCUClient {
 pub enum Endpoints {
     CancelLobby,
     QuickSeach,
-    Example,
 }
 
 impl Endpoints {
@@ -67,7 +66,6 @@ impl Endpoints {
         match self {
             Endpoints::CancelLobby => "/lol-lobby/v1/lobby/custom/cancel-champ-select",
             Endpoints::QuickSeach => "/lol-lobby/v2/matchmaking/quick-search",
-            Endpoints::Example => "/riotclient/app-name",
         }
     }
 }
