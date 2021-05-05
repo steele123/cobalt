@@ -37,33 +37,46 @@ fn main() -> eyre::Result<()> {
 
     // TODO: Need a thread to check if the league client is open.
 
-    println!("Press D to dodge the lobby...");
+    println!("CONTROLS\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
 
-    // TODO: Make it only dodge if the user is in queue
+    // TODO: Make it only dodge if the user is in champ select
     loop {
-        if get_key_press(Keys::D as _) {
-            lcu.crash_lobby()?;
+        if get_key_press_or_hold(Key::CONTROL) {
+            if get_key_press(Key::D) {
+                println!("Pressed Ctrl+D");
+                // don't want to keep fucking going into a tft
+                #[cfg(not(debug_assertions))]
+                lcu.crash_lobby()?;
+            }
+
+            if get_key_press(Key::B) {
+                println!("Pressed Ctrl+B");
+                // TODO: Aram boost api here :)
+            }
         }
 
         // if this isn't working make it sleep for less time
-        std::thread::sleep(Duration::from_secs(1));
+        std::thread::sleep(Duration::from_millis(500));
     }
 }
 
 // TODO: Export the functions down here into a module
-enum Keys {
+enum Key {
     D = 0x44,
+    B = 0x42,
+    CONTROL = 0x11,
 }
 
 // key codes https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 // this wrapper will return true if its held down OR pressed
 // GetAsyncKeyState is retarded and will return -32767 if key is held, 0 if key
 // is not touched and 1 if key is only pressed
-fn get_key_hold(key: i32) -> bool { unsafe { GetAsyncKeyState(key) != -32767 } }
 
-fn get_key_press(key: i32) -> bool { unsafe { GetAsyncKeyState(key) != 1 } }
+fn get_key_hold(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) == -32767 } }
 
-fn get_key_press_or_hold(key: i32) -> bool { unsafe { GetAsyncKeyState(key) != 0 } }
+fn get_key_press(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) == 1 } }
+
+fn get_key_press_or_hold(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) != 0 } }
 
 fn lcu_watcher() {
     loop {
