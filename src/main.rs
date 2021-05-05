@@ -8,7 +8,9 @@
 
 use std::time::Duration;
 
-use utils::{input::*, process::league_exists, toast};
+use utils::{input::*, lcu::Endpoints, process::league_exists, toast};
+
+use crate::utils::lcu::Method;
 
 mod utils;
 
@@ -49,7 +51,7 @@ fn main() -> eyre::Result<()> {
 
             if get_key_press(Key::B) {
                 println!("Pressed Ctrl+B");
-                // TODO: Aram boost api here :)
+                lcu.send(&Endpoints::AramBoost, &Method::POST, "")?;
             }
         }
 
