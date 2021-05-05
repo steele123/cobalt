@@ -42,7 +42,8 @@ async fn main() -> eyre::Result<()> {
     loop {
         let mut line = String::new();
         std::io::stdin().read_line(&mut line);
+        println!("Lobby dodger initiated");
         lcu.crash_lobby().await.unwrap();
-        println!("Champ Select lobby was crashed successfully");
+        println!("Lobby was dodged successfully");
     }
 }
