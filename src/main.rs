@@ -1,8 +1,9 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::perf)]
 
-use crate::utils::lcu::Endpoints;
+use reqwest::Response;
 
-mod ui;
+use crate::utils::lcu::{Endpoints, LCUClient};
+
 mod utils;
 
 #[tokio::main]
@@ -14,20 +15,7 @@ async fn main() -> eyre::Result<()> {
 
     let lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap();
 
-    println!("{}", lock_file_info.token);
+    lcu.crash_lobby();
 
-    let resp = lcu
-        .send(Endpoints::CancelLobby, reqwest::Method::POST, "{}".into())
-        .await
-        .unwrap();
-
-    println!("{:?}", resp);
-
-    let r = lcu
-        .send(Endpoints::QuickSeach, reqwest::Method::POST, r#"{"queueId": 1110}"#.into())
-        .await
-        .unwrap();
-
-    println!("{:?}", r);
     Ok(())
 }

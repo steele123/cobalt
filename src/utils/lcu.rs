@@ -40,6 +40,20 @@ impl LCUClient {
             _ => Err(eyre::eyre!("what in the hell are u tryna do")),
         }
     }
+
+    pub async fn crash_lobby(&self) -> Result<()> {
+        let cancel_lobby_response: Response = lcu
+            .send(Endpoints::CancelLobby, reqwest::Method::POST, "{}".into())
+            .await
+            .unwrap();
+
+        let quick_search_response = lcu
+            .send(Endpoints::QuickSeach, reqwest::Method::POST, r#"{"queueId": 1110}"#.into())
+            .await
+            .unwrap();
+
+        Ok(())
+    }
 }
 
 pub enum Endpoints {
