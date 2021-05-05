@@ -35,7 +35,7 @@ impl LCUClient {
         let _cancel_lobby_response = self.send(&Endpoints::CancelLobby, &Method::POST, "{}").unwrap();
 
         let _quick_search_response = self
-            .send(&Endpoints::QuickSeach, &Method::POST, r#"{"queueId": 1110}"#)
+            .send(&Endpoints::QuickSearch, &Method::POST, r#"{"queueId": 1110}"#)
             .unwrap();
 
         toast::send("Lobby has been dodged, you can leave the TFT game ~45 seconsd.")?;
@@ -45,7 +45,7 @@ impl LCUClient {
 
 pub enum Endpoints {
     CancelLobby,
-    QuickSeach,
+    QuickSearch,
 }
 
 pub enum Method {
@@ -57,7 +57,7 @@ impl Endpoints {
     pub const fn as_endpoint(&self) -> &'static str {
         match self {
             Endpoints::CancelLobby => "/lol-lobby/v1/lobby/custom/cancel-champ-select",
-            Endpoints::QuickSeach => "/lol-lobby/v2/matchmaking/quick-search",
+            Endpoints::QuickSearch => "/lol-lobby/v2/matchmaking/quick-search",
         }
     }
 }
