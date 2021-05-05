@@ -8,11 +8,18 @@
 
 use std::time::Duration;
 
-use utils::{input::*, lcu::Endpoints, process::league_exists, toast};
+use utils::{
+    input::{get_key_press, get_key_press_or_hold, Key},
+    lcu::{Endpoints, Method},
+    process::league_exists,
+    toast,
+};
 
-use crate::utils::lcu::Method;
+use crate::process_worker::WORKER;
 
 mod utils;
+
+mod process_worker;
 
 fn main() -> eyre::Result<()> {
     toast::send("Trying to find the LeagueClient.exe process...")?;
@@ -37,6 +44,8 @@ fn main() -> eyre::Result<()> {
 
     // TODO: Need a thread to check if the league client is open.
 
+    WORKER.spawn();
+
     println!("CONTROLS\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
 
     // TODO: Make it only dodge if the user is in champ select
@@ -57,11 +66,5 @@ fn main() -> eyre::Result<()> {
 
         // if this isn't working make it sleep for less time
         std::thread::sleep(Duration::from_millis(500));
-    }
-}
-
-fn lcu_watcher() {
-    loop {
-        if league_exists() {}
     }
 }
