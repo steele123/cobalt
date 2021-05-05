@@ -1,5 +1,5 @@
+use attohttpc::Response;
 use eyre::Result;
-use ureq::Response;
 
 pub struct LCUClient {
     base: String,
@@ -16,12 +16,15 @@ impl LCUClient {
 
     pub fn send(&self, endpoint: &Endpoints, method: &Method, payload: &str) -> Result<Response> {
         match method {
-            Method::GET => Ok(ureq::get(&format!("{}{}", self.base, endpoint.as_endpoint()))
-                .set("Authorization", &self.token)
-                .call()?),
-            Method::POST => Ok(ureq::post(&format!("{}{}", self.base, endpoint.as_endpoint()))
-                .set("Authorization", &self.token)
-                .send_string(payload)?),
+            Method::GET => Ok(attohttpc::get(&format!("{}{}", self.base, endpoint.as_endpoint()))
+                .header("Authorization", &self.token)
+                .danger_accept_invalid_certs(true)
+                .send()?),
+            Method::POST => Ok(attohttpc::post(&format!("{}{}", self.base, endpoint.as_endpoint()))
+                .header("Authorization", &self.token)
+                .danger_accept_invalid_certs(true)
+                .text(payload)
+                .send()?),
         }
     }
 
