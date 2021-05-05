@@ -8,9 +8,9 @@
 
 use std::time::Duration;
 
-use crate::utils::{input::*, process::league_exists};
-
 use utils::toast;
+
+use crate::utils::{input::*, process::league_exists};
 
 mod utils;
 
