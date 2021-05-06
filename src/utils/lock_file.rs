@@ -7,8 +7,6 @@ pub struct LockFileInfo {
     pub token: String,
 }
 
-// TODO: Need to wait for the lockfile to be created because the lockfile isn't
-// always there if league is open
 pub fn parse(lol_path: &str) -> Result<LockFileInfo> {
     let lockfile_path_string = &lol_path.replace("LeagueClient.exe", "lockfile");
 
