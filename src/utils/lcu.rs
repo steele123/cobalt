@@ -37,7 +37,9 @@ impl LCUClient {
         let is_lobby = self.send(&Endpoints::ChampSelect, &Method::GET, "")?.is_success();
 
         if !is_lobby {
-            return Err(eyre::eyre!("Not in a lobby to crash..."));
+            // TODO: Eh i mean we could do some proper error handling but this here isn't
+            // really  a big deal since it isn't a proper error
+            return Ok(());
         }
 
         let _cancel_lobby_response = self.send(&Endpoints::CancelLobby, &Method::POST, "{}").unwrap();
