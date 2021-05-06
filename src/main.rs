@@ -40,13 +40,9 @@ fn main() -> eyre::Result<()> {
 
     let lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap();
 
-    // TODO: Need a thread to check if the league client is open.
-
     println!("Controls\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
 
     let mut key_listener = KeyListener::new();
-
-    // TODO: Make it only dodge if the user is in champ select
 
     key_listener
         .register_hotkey(Modifiers::CTRL, Key::D, move || {
@@ -70,10 +66,4 @@ fn main() -> eyre::Result<()> {
     key_listener.listen();
 
     Ok(())
-}
-
-fn lcu_watcher() {
-    loop {
-        if league_exists() {}
-    }
 }
