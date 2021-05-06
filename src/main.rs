@@ -38,7 +38,7 @@ fn main() -> eyre::Result<()> {
 
     let lock_file_info = utils::lock_file::parse(&path).unwrap();
 
-    let mut lcu = std::sync::Arc::new(std::sync::Mutex::new(
+    let lcu = std::sync::Arc::new(std::sync::Mutex::new(
         utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap(),
     ));
 
