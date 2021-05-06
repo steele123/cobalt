@@ -3,18 +3,22 @@
     clippy::cast_possible_truncation,
     clippy::module_name_repetitions,
     non_snake_case,
-    dead_code
+    dead_code,
+    clippy::cast_possible_wrap,
+    clippy::upper_case_acronyms
 )]
 
-use std::time::Duration;
+use std::sync::{Arc, Mutex};
 
 use process_worker::Events;
 use utils::{
-    input::{get_key_press, get_key_press_or_hold, Key},
-    lcu::{Endpoints, Method},
+    input::{Key, KeyListener, Modifiers},
+    lcu::Endpoints,
     process::league_exists,
     toast,
 };
+
+use crate::utils::lcu::Method;
 
 mod utils;
 
@@ -38,48 +42,42 @@ fn main() -> eyre::Result<()> {
 
     let lock_file_info = utils::lock_file::parse(&path).unwrap();
 
-    let lcu = std::sync::Arc::new(std::sync::Mutex::new(
+    let lcu = Arc::new(Mutex::new(
         utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap(),
     ));
 
-    let lcu_clone = std::sync::Arc::clone(&lcu);
+    let lcu_clone = Arc::clone(&lcu);
 
     let rx = process_worker::spawn();
 
-    println!("Controls\n>CTRL+D to dodge your current champ select.\n>CTRL+B to aram boost");
+    println!("Controls\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
 
-    // TODO: Make it only dodge if the user is in champ select
     std::thread::spawn(move || {
-        loop {
-            // TODO: JSON config for keys (maybe)
+        let mut key_listener = KeyListener::new();
 
-            if !lcu_clone.lock().unwrap().can_send {
-                std::thread::sleep(Duration::from_millis(200));
-                continue;
-            }
+        key_listener
+            .register_hotkey(Modifiers::CTRL, Key::D, move || {
+                println!("Lobby Crash Queued...");
+                #[cfg(not(debug_assertions))]
+                lcu_clone.lock().unwrap().crash_lobby().unwrap();
+                #[cfg(debug_assertions)]
+                println!("Debug Assertions are on so you don't go into TFT");
+            })
+            .unwrap();
 
-            if get_key_press_or_hold(Key::CONTROL) {
-                if get_key_press(Key::D) {
-                    println!("Lobby Crash Queued...");
-                    // don't want to keep fucking going into a tft
-                    #[cfg(not(debug_assertions))]
-                    lcu_clone.crash_lobby().unwrap();
-                    println!("Completed Lobby Crash");
-                }
+        key_listener
+            .register_hotkey(Modifiers::CTRL, Key::B, move || {
+                println!("ARAM Boost Queued...");
+                lcu_clone
+                    .lock()
+                    .unwrap()
+                    .send(&Endpoints::AramBoost, &Method::POST, "")
+                    .unwrap();
+                println!("ARAM Boost Completed...");
+            })
+            .unwrap();
 
-                if get_key_press(Key::B) {
-                    println!("ARAM Boost Queued...");
-                    lcu_clone
-                        .lock()
-                        .unwrap()
-                        .send(&Endpoints::AramBoost, &Method::POST, "")
-                        .unwrap();
-                    println!("Completed ARAM Boost");
-                }
-            }
-
-            std::thread::sleep(Duration::from_millis(200));
-        }
+        key_listener.listen();
     });
 
     while let Ok(event) = rx.recv() {
