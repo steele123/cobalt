@@ -3,7 +3,9 @@
     clippy::cast_possible_truncation,
     clippy::module_name_repetitions,
     non_snake_case,
-    dead_code
+    dead_code,
+    clippy::cast_possible_wrap,
+    clippy::upper_case_acronyms
 )]
 
 use utils::{
