@@ -1,8 +1,7 @@
 use std::{collections::HashMap, mem::MaybeUninit};
 
 use bindings::Windows::Win32::{
-    KeyboardAndMouseInput::{GetAsyncKeyState, RegisterHotKey, HOT_KEY_MODIFIERS},
-    SystemServices::BOOL,
+    KeyboardAndMouseInput::{RegisterHotKey, HOT_KEY_MODIFIERS},
     WindowsAndMessaging::{GetMessageW, HWND, WPARAM},
 };
 
@@ -19,9 +18,6 @@ pub enum Modifiers {
 }
 
 // key codes https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
-// this wrapper will return true if its held down OR pressed
-// GetAsyncKeyState is retarded and will return -32767 if key is held, 0 if key
-// is not touched and 1 if key is only pressed
 
 pub struct KeyListener {
     last_id: i32,
@@ -71,9 +67,3 @@ impl KeyListener {
         }
     }
 }
-
-pub fn get_key_hold(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) == -32767 } }
-
-pub fn get_key_press(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) == 1 } }
-
-pub fn get_key_press_or_hold(key: Key) -> bool { unsafe { GetAsyncKeyState(key as i32) != 0 } }
