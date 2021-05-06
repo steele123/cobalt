@@ -37,27 +37,34 @@ fn main() -> eyre::Result<()> {
 
     // TODO: Need a thread to check if the league client is open.
 
-    println!("CONTROLS\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
+    println!("Controls\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
+
+    let mut key_listener = KeyListener::new();
 
     // TODO: Make it only dodge if the user is in champ select
-    loop {
-        if get_key_press_or_hold(Key::CONTROL) {
-            if get_key_press(Key::D) {
-                println!("Pressed Ctrl+D");
-                // don't want to keep fucking going into a tft
-                #[cfg(not(debug_assertions))]
-                lcu.crash_lobby()?;
-            }
 
-            if get_key_press(Key::B) {
-                println!("Pressed Ctrl+B");
-                lcu.send(&Endpoints::AramBoost, &Method::POST, "")?;
-            }
-        }
+    key_listener
+        .register_hotkey(Modifiers::CTRL, Key::D, move || {
+            println!("Lobby Crash Queued...");
+            #[cfg(not(debug_assertions))]
+            lcu.crash_lobby().unwrap();
+            #[cfg(debug_assertions)]
+            println!("Debug Assertions are on so you don't go into TFT");
+        })
+        .unwrap();
 
-        // if this isn't working make it sleep for less time
-        std::thread::sleep(Duration::from_millis(500));
-    }
+    key_listener
+        .register_hotkey(Modifiers::CTRL, Key::B, move || {
+            println!("ARAM Boost Queued...");
+            lcu.send(&Endpoints::AramBoost, &Method::POST, "").unwrap();
+            println!("ARAM Boost Completed...");
+        })
+        .unwrap();
+
+    // VERY SYNC, JUST PARSES ALL OF THE MESSAGES
+    key_listener.listen();
+
+    Ok(())
 }
 
 fn lcu_watcher() {
