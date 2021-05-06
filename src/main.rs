@@ -31,7 +31,6 @@ fn main() -> eyre::Result<()> {
             break;
         }
 
-        // slow down loop a bit
         std::thread::sleep(std::time::Duration::from_secs(2));
     }
 
@@ -39,41 +38,62 @@ fn main() -> eyre::Result<()> {
 
     let lock_file_info = utils::lock_file::parse(&path).unwrap();
 
-    let lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap();
+    let mut lcu = std::sync::Arc::new(std::sync::Mutex::new(
+        utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap(),
+    ));
 
-    // TODO: Need a thread to check if the league client is open.
+    let lcu_clone = std::sync::Arc::clone(&lcu);
 
     let rx = process_worker::spawn();
 
-    // This is blocking and should be handled as such.
-    /*
-    while let Ok(event) = rx.recv() {
-        match event {
-            Events::Connected => {},
-            Events::Disconnected => {},
-        }
-    }
-    */
-
-    println!("CONTROLS\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
+    println!("Controls\n>CTRL+D to dodge your current champ select.\n>CTRL+B to aram boost");
 
     // TODO: Make it only dodge if the user is in champ select
-    loop {
-        if get_key_press_or_hold(Key::CONTROL) {
-            if get_key_press(Key::D) {
-                println!("Pressed Ctrl+D");
-                // don't want to keep fucking going into a tft
-                #[cfg(not(debug_assertions))]
-                lcu.crash_lobby()?;
+    std::thread::spawn(move || {
+        loop {
+            // TODO: JSON config for keys (maybe)
+
+            if !lcu_clone.lock().unwrap().can_send {
+                std::thread::sleep(Duration::from_millis(200));
+                continue;
             }
 
-            if get_key_press(Key::B) {
-                println!("Pressed Ctrl+B");
-                lcu.send(&Endpoints::AramBoost, &Method::POST, "")?;
+            if get_key_press_or_hold(Key::CONTROL) {
+                if get_key_press(Key::D) {
+                    println!("Lobby Crash Queued...");
+                    // don't want to keep fucking going into a tft
+                    #[cfg(not(debug_assertions))]
+                    lcu_clone.crash_lobby().unwrap();
+                    println!("Completed Lobby Crash");
+                }
+
+                if get_key_press(Key::B) {
+                    println!("ARAM Boost Queued...");
+                    lcu_clone
+                        .lock()
+                        .unwrap()
+                        .send(&Endpoints::AramBoost, &Method::POST, "")
+                        .unwrap();
+                    println!("Completed ARAM Boost");
+                }
             }
+
+            std::thread::sleep(Duration::from_millis(200));
         }
+    });
 
-        // if this isn't working make it sleep for less time
-        std::thread::sleep(Duration::from_millis(500));
+    while let Ok(event) = rx.recv() {
+        match event {
+            Events::Connected => {
+                let path = utils::process::get_lock_file_path().unwrap();
+                let lock_file_info = utils::lock_file::parse(&path).unwrap();
+                lcu.lock().unwrap().reconnect(&lock_file_info.token, lock_file_info.port);
+            },
+            Events::Disconnected => {
+                lcu.lock().unwrap().disconnect();
+            },
+        }
     }
+
+    Ok(())
 }

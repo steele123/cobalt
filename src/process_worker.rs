@@ -6,7 +6,7 @@ use std::{
 
 use crate::utils::process::league_exists;
 
-const SLEEP_TIME_MS: u64 = 1000;
+const SLEEP_TIME_MS: u64 = 500;
 
 pub enum Events {
     Connected,
