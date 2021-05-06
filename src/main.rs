@@ -39,7 +39,6 @@ fn main() -> eyre::Result<()> {
 
     println!("CONTROLS\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
 
-    // TODO: Make it only dodge if the user is in champ select
     loop {
         if get_key_press_or_hold(Key::CONTROL) {
             if get_key_press(Key::D) {
