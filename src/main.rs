@@ -3,12 +3,17 @@
     clippy::cast_possible_truncation,
     clippy::module_name_repetitions,
     non_snake_case,
-    dead_code
+    dead_code,
+    clippy::cast_possible_wrap,
+    clippy::upper_case_acronyms
 )]
 
-use std::time::Duration;
-
-use utils::{input::*, lcu::Endpoints, process::league_exists, toast};
+use utils::{
+    input::{Key, KeyListener, Modifiers},
+    lcu::Endpoints,
+    process::league_exists,
+    toast,
+};
 
 use crate::utils::lcu::Method;
 
@@ -35,32 +40,30 @@ fn main() -> eyre::Result<()> {
 
     let lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap();
 
-    // TODO: Need a thread to check if the league client is open.
+    println!("Controls\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
 
-    println!("CONTROLS\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
+    let mut key_listener = KeyListener::new();
 
-    loop {
-        if get_key_press_or_hold(Key::CONTROL) {
-            if get_key_press(Key::D) {
-                println!("Pressed Ctrl+D");
-                // don't want to keep fucking going into a tft
-                #[cfg(not(debug_assertions))]
-                lcu.crash_lobby()?;
-            }
+    key_listener
+        .register_hotkey(Modifiers::CTRL, Key::D, move || {
+            println!("Lobby Crash Queued...");
+            #[cfg(not(debug_assertions))]
+            lcu.crash_lobby().unwrap();
+            #[cfg(debug_assertions)]
+            println!("Debug Assertions are on so you don't go into TFT");
+        })
+        .unwrap();
 
-            if get_key_press(Key::B) {
-                println!("Pressed Ctrl+B");
-                lcu.send(&Endpoints::AramBoost, &Method::POST, "")?;
-            }
-        }
+    key_listener
+        .register_hotkey(Modifiers::CTRL, Key::B, move || {
+            println!("ARAM Boost Queued...");
+            lcu.send(&Endpoints::AramBoost, &Method::POST, "").unwrap();
+            println!("ARAM Boost Completed...");
+        })
+        .unwrap();
 
-        // if this isn't working make it sleep for less time
-        std::thread::sleep(Duration::from_millis(500));
-    }
-}
+    // VERY SYNC, JUST PARSES ALL OF THE MESSAGES
+    key_listener.listen();
 
-fn lcu_watcher() {
-    loop {
-        if league_exists() {}
-    }
+    Ok(())
 }
