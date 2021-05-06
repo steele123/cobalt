@@ -6,9 +6,12 @@
     dead_code
 )]
 
-use std::time::Duration;
-
-use utils::{input::*, lcu::Endpoints, process::league_exists, toast};
+use utils::{
+    input::{Key, KeyListener, Modifiers},
+    lcu::Endpoints,
+    process::league_exists,
+    toast,
+};
 
 use crate::utils::lcu::Method;
 
