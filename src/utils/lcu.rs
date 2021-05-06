@@ -6,6 +6,7 @@ use crate::utils::toast;
 pub struct LCUClient {
     base: String,
     token: String,
+    pub can_send: bool,
 }
 
 impl LCUClient {
@@ -13,6 +14,7 @@ impl LCUClient {
         Ok(Self {
             base: format!("https://127.0.0.1:{}", port),
             token: format!("Basic {}", base64::encode(format!("riot:{}", token))),
+            can_send: true,
         })
     }
 
@@ -47,6 +49,14 @@ impl LCUClient {
         toast::send("Lobby has been dodged, you can leave the TFT game ~45 seconsd.")?;
         Ok(())
     }
+
+    pub fn reconnect(&mut self, token: &str, port: i32) {
+        self.base = format!("https://127.0.0.1:{}", port);
+        self.token = format!("Basic {}", base64::encode(format!("riot:{}", token)));
+        self.can_send = true;
+    }
+
+    pub fn disconnect(&mut self) { self.can_send = false; }
 }
 
 pub enum Endpoints {
