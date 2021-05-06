@@ -32,6 +32,12 @@ impl LCUClient {
     }
 
     pub fn crash_lobby(&self) -> Result<()> {
+        let is_lobby = self.send(&Endpoints::ChampSelect, &Method::GET, "")?.is_success();
+
+        if !is_lobby {
+            return Err(eyre::eyre!("Not in a lobby to crash..."));
+        }
+
         let _cancel_lobby_response = self.send(&Endpoints::CancelLobby, &Method::POST, "{}").unwrap();
 
         let _quick_search_response = self
@@ -47,6 +53,7 @@ pub enum Endpoints {
     CancelLobby,
     QuickSearch,
     AramBoost,
+    ChampSelect,
 }
 
 pub enum Method {
@@ -62,6 +69,7 @@ impl Endpoints {
             Endpoints::AramBoost => {
                 r#"/lol-login/v1/session/invoke?destination=lcdsServiceProxy&method=call&args=["","teambuilder-draft","activateBattleBoostV1",""]"#
             },
+            Endpoints::ChampSelect => "/lol-champ-select/v1/session",
         }
     }
 }
