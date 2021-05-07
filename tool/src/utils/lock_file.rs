@@ -29,14 +29,14 @@ pub fn parse(lol_path: &str) -> Result<LockFileInfo> {
 }
 
 fn watch_file(path: &Path) -> eyre::Result<()> {
-    let sw = stopwatch::Stopwatch::start_new();
+    let now = std::time::Instant::now();
 
     let result: eyre::Result<()> = loop {
         if path.exists() {
             break Ok(());
         }
 
-        if sw.elapsed_ms() > 20000 {
+        if now.elapsed().as_millis() > 20000 {
             break Err(eyre!("Couldn't find lockfile after 20 seconds..."));
         }
 
