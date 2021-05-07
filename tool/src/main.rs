@@ -103,9 +103,11 @@ fn main() -> eyre::Result<()> {
                 let path = utils::process::get_lock_file_path().unwrap();
                 let lock_file_info = utils::lock_file::parse(&path).unwrap();
                 lcu.lock().unwrap().reconnect(&lock_file_info.token, lock_file_info.port);
+                println!("Successfully reconnected to the League Client");
             },
             Events::Disconnected => {
                 lcu.lock().unwrap().disconnect();
+                println!("League Client has been disconnected we will attempt to reconnect to it...");
             },
         }
     }
