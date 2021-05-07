@@ -49,13 +49,14 @@ fn main() -> eyre::Result<()> {
         std::thread::sleep(std::time::Duration::from_secs(2));
     }
 
-    let path = utils::process::get_lock_file_path().unwrap();
+    let path = utils::process::get_lock_file_path()?;
 
-    let lock_file_info = utils::lock_file::parse(&path).unwrap();
+    let lock_file_info = utils::lock_file::parse(&path)?;
 
-    let lcu = Arc::new(Mutex::new(
-        utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap(),
-    ));
+    let lcu = Arc::new(Mutex::new(utils::lcu::LCUClient::new(
+        &lock_file_info.token,
+        lock_file_info.port,
+    )?));
 
     let rx = process_worker::spawn();
 
