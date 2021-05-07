@@ -13,7 +13,7 @@ impl LCUClient {
     pub fn new(token: &str, port: i32) -> Result<Self> {
         Ok(Self {
             base: format!("https://127.0.0.1:{}", port),
-            token: format!("Basic {}", base64::encode(format!("riot:{}", token))),
+            token: format!("Basic {}", token),
             can_send: true,
         })
     }
@@ -54,7 +54,7 @@ impl LCUClient {
 
     pub fn reconnect(&mut self, token: &str, port: i32) {
         self.base = format!("https://127.0.0.1:{}", port);
-        self.token = format!("Basic {}", base64::encode(format!("riot:{}", token)));
+        self.token = format!("Basic {}", token);
         self.can_send = true;
     }
 
