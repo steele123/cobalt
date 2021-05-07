@@ -8,7 +8,7 @@ impl Console {
              from your RP by pressing CTRL+B\n"
         );
 
-        println!("This tool will NEVER cost money if you have paid you were scammed");
+        println!("This tool will NEVER cost money if you have paid you were scammed\n");
 
         println!("Made by steele and Tyler");
     }
