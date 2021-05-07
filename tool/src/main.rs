@@ -38,11 +38,11 @@ fn main() -> eyre::Result<()> {
 
     println!("Trying to find the LeagueClient.exe process...");
 
-    let sw = stopwatch::Stopwatch::start_new();
+    let now = std::time::Instant::now();
 
     loop {
         if league_exists() {
-            println!("Found LeagueClient.exe in {}ms!", sw.elapsed_ms());
+            println!("Found LeagueClient.exe in {}ms!", now.elapsed().as_millis());
             break;
         }
 
