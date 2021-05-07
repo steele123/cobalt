@@ -103,6 +103,7 @@ fn main() -> eyre::Result<()> {
         key_listener.listen();
     }});
 
+    // TODO: Events still feel oddly slow, I probably should look into it some time.
     while let Ok(event) = rx.recv() {
         match event {
             Events::Connected => {
