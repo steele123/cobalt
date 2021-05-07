@@ -1,8 +1,6 @@
 use attohttpc::Response;
 use eyre::Result;
 
-use crate::utils::toast;
-
 pub struct LCUClient {
     base: String,
     token: String,
@@ -48,7 +46,6 @@ impl LCUClient {
             .send(&Endpoints::QuickSearch, &Method::POST, r#"{"queueId": 1110}"#)
             .unwrap();
 
-        toast::send("Lobby has been dodged, you can leave the TFT game ~45 seconsd.")?;
         Ok(())
     }
 

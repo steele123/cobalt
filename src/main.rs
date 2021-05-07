@@ -15,7 +15,6 @@ use utils::{
     input::{Key, KeyListener, Modifiers},
     lcu::Endpoints,
     process::league_exists,
-    toast,
 };
 
 use crate::utils::lcu::Method;
@@ -34,13 +33,13 @@ macro_rules! enclose {
 }
 
 fn main() -> eyre::Result<()> {
-    toast::send("Trying to find the LeagueClient.exe process...")?;
+    println!("Trying to find the LeagueClient.exe process...");
 
     let sw = stopwatch::Stopwatch::start_new();
 
     loop {
         if league_exists() {
-            toast::send(&format!("Found LeagueClient.exe in {}ms!", sw.elapsed_ms()))?;
+            println!("Found LeagueClient.exe in {}ms!", sw.elapsed_ms());
             break;
         }
 
@@ -72,6 +71,8 @@ fn main() -> eyre::Result<()> {
                     lcu.lock().unwrap().crash_lobby().unwrap();
                     #[cfg(debug_assertions)]
                     println!("Debug Assertions are on so you don't go into TFT");
+
+                println!("Lobby has been dodged, you can leave the TFT game ~45 seconsd.");
                 }},
             )
             .unwrap();
