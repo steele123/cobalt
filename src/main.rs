@@ -18,9 +18,11 @@ use utils::{
     toast,
 };
 
-use crate::utils::lcu::Method;
+use crate::{console::Console, utils::lcu::Method};
 
 mod utils;
+
+mod console;
 
 mod process_worker;
 
@@ -34,6 +36,8 @@ macro_rules! enclose {
 }
 
 fn main() -> eyre::Result<()> {
+    Console::welcome_message();
+
     toast::send("Trying to find the LeagueClient.exe process...")?;
 
     let sw = stopwatch::Stopwatch::start_new();
@@ -56,8 +60,6 @@ fn main() -> eyre::Result<()> {
     ));
 
     let rx = process_worker::spawn();
-
-    println!("Controls\nCTRL+D to dodge your current champ select.\nCTRL+B to aram boost");
 
     std::thread::spawn(enclose! { (lcu) move || {
         let mut key_listener = KeyListener::new();
