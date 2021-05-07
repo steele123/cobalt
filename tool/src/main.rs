@@ -42,7 +42,12 @@ fn main() -> eyre::Result<()> {
 
     loop {
         if league_exists() {
-            println!("Found LeagueClient.exe in {}ms!", now.elapsed().as_millis());
+            if now.elapsed().as_millis() < 1000 {
+                println!("Found LeagueClient.exe in {}ms!", now.elapsed().as_millis());
+            } else {
+                println!("Found LeagueClient.exe in {:.2}s!", now.elapsed().as_secs_f64());
+            }
+
             break;
         }
 
