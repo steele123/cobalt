@@ -8,10 +8,7 @@ impl Console {
              from your RP by pressing CTRL+B\n"
         );
 
-        println!(
-            "This tool will NEVER cost money if you have paid you were scammed, a free download is available at \
-             steele.gg/multi-tool"
-        );
+        println!("This tool will NEVER cost money if you have paid you were scammed");
 
         println!("Made by steele and Tyler");
     }
