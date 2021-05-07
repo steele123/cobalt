@@ -8,7 +8,6 @@ edition = "2018"
 
 [dependencies]
 attohttpc = "0.17.0"
-stopwatch = "0.0.7"
 base64 = "0.13.0"
 eyre = "0.6.5"
 bindings = { path = "bindings" }

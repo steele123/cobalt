@@ -38,24 +38,30 @@ fn main() -> eyre::Result<()> {
 
     println!("Trying to find the LeagueClient.exe process...");
 
-    let sw = stopwatch::Stopwatch::start_new();
+    let now = std::time::Instant::now();
 
     loop {
         if league_exists() {
-            println!("Found LeagueClient.exe in {}ms!", sw.elapsed_ms());
+            if now.elapsed().as_millis() < 1000 {
+                println!("Found LeagueClient.exe in {}ms!", now.elapsed().as_millis());
+            } else {
+                println!("Found LeagueClient.exe in {:.2}s!", now.elapsed().as_secs_f64());
+            }
+
             break;
         }
 
         std::thread::sleep(std::time::Duration::from_secs(2));
     }
 
-    let path = utils::process::get_lock_file_path().unwrap();
+    let path = utils::process::get_lock_file_path()?;
 
-    let lock_file_info = utils::lock_file::parse(&path).unwrap();
+    let lock_file_info = utils::lock_file::parse(&path)?;
 
-    let lcu = Arc::new(Mutex::new(
-        utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port).unwrap(),
-    ));
+    let lcu = Arc::new(Mutex::new(utils::lcu::LCUClient::new(
+        &lock_file_info.token,
+        lock_file_info.port,
+    )?));
 
     let rx = process_worker::spawn();
 
@@ -97,15 +103,18 @@ fn main() -> eyre::Result<()> {
         key_listener.listen();
     }});
 
+    // TODO: Events still feel oddly slow, I probably should look into it some time.
     while let Ok(event) = rx.recv() {
         match event {
             Events::Connected => {
                 let path = utils::process::get_lock_file_path().unwrap();
                 let lock_file_info = utils::lock_file::parse(&path).unwrap();
                 lcu.lock().unwrap().reconnect(&lock_file_info.token, lock_file_info.port);
+                println!("Successfully reconnected to the League Client");
             },
             Events::Disconnected => {
                 lcu.lock().unwrap().disconnect();
+                println!("League Client has been disconnected we will attempt to reconnect to it...");
             },
         }
     }
