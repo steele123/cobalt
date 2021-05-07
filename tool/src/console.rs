@@ -10,6 +10,6 @@ impl Console {
 
         println!("This tool will NEVER cost money if you have paid you were scammed\n");
 
-        println!("Made by steele and Tyler");
+        println!("Made by steele and Tyler\n");
     }
 }
