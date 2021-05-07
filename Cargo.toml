@@ -13,6 +13,7 @@ base64 = "0.13.0"
 eyre = "0.6.5"
 bindings = { path = "bindings" }
 winrt-notification = { git = "https://github.com/tyhi/winrt-notification" }
+tungstenite = "0.13.0"
 
 [profile.release]
 lto = "fat"

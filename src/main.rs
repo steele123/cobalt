@@ -22,6 +22,8 @@ use crate::utils::lcu::Method;
 
 mod utils;
 
+mod league_events;
+
 mod process_worker;
 
 macro_rules! enclose {
