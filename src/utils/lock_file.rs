@@ -22,7 +22,7 @@ pub fn parse(lol_path: &str) -> Result<LockFileInfo> {
 
     let lock_file_info = LockFileInfo {
         port: split[2].parse::<i32>().unwrap(),
-        token: split[3].into(),
+        token: base64::encode(format!("riot:{}", split[3])),
     };
 
     Ok(lock_file_info)
