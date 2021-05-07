@@ -1,17 +1,9 @@
-[package]
-name = "kataRUST"
-version = "0.1.0"
-authors = ["Tyler Hill <tyler@oxide.fi>"]
-edition = "2018"
+[workspace]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-attohttpc = "0.17.0"
-stopwatch = "0.0.7"
-base64 = "0.13.0"
-eyre = "0.6.5"
-bindings = { path = "bindings" }
+members = [
+    "tool",
+	"launcher",
+]
 
 [profile.release]
 lto = "fat"
