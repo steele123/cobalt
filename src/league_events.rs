@@ -6,19 +6,24 @@ pub struct EventHandler {
 
 impl EventHandler {
     pub fn new(&self, port: i32, token: String) -> Self {
-        self.set_settings(port, token);
+        let socket = self.create_socket(port, token);
 
-        Self
+        Self { socket }
     }
 
-    fn create_socket(&self, port: i32, token: String) {
-        let req = Request::builder()
+    fn create_socket(&self, port: i32, token: String) -> WebSocket<AutoStream> {
+        let request = Request::builder()
             .uri(format!("wss://127.0.0.1:{}/", port))
-            .header("Credentials");
+            .header(
+                "Authorization",
+                format!("Basic {}", base64::encode(format!("riot:{}", token))),
+            )
+            .body(())
+            .unwrap();
 
-        let (mut socket, response) = connect(req);
+        let (socket, _response) = connect(request).expect("Can't connect");
 
-        socket.set_config()
+        socket
     }
 
     pub fn set_settings(&self, port: i32, token: String) {
