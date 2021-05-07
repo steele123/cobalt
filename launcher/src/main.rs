@@ -1,3 +1,1 @@
-fn main() -> eyre::Result<()> {
- Ok(())
-}
+fn main() {}
