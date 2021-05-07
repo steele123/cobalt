@@ -72,7 +72,7 @@ fn main() -> eyre::Result<()> {
                     #[cfg(debug_assertions)]
                     println!("Debug Assertions are on so you don't go into TFT");
 
-                println!("Lobby has been dodged, you can leave the TFT game ~45 seconds.");
+                println!("Lobby has been dodged, you can leave the TFT game after ~45 seconds.");
                 }},
             )
             .unwrap();
