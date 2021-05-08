@@ -41,7 +41,7 @@ fn main() -> eyre::Result<()> {
     let now = std::time::Instant::now();
 
     loop {
-        if league_exists() {
+        if league_exists(true) {
             if now.elapsed().as_millis() < 1000 {
                 println!("Found LeagueClient.exe in {}ms!", now.elapsed().as_millis());
             } else {
@@ -103,7 +103,6 @@ fn main() -> eyre::Result<()> {
         key_listener.listen();
     }});
 
-    // TODO: Events still feel oddly slow, I probably should look into it some time.
     while let Ok(event) = rx.recv() {
         match event {
             Events::Connected => {
