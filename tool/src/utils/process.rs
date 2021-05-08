@@ -32,15 +32,11 @@ pub fn get_lock_file_path() -> Result<String> {
 }
 
 pub fn league_exists(ui_process: bool) -> bool {
-    let process_id: c_ulong = 0;
-
     if ui_process {
-        get_process_id_by_name("LeagueClientUx.exe").unwrap();
+        get_process_id_by_name("LeagueClientUx.exe").unwrap() != 0
     } else {
-        get_process_id_by_name("LeagueClient.exe").unwrap();
+        get_process_id_by_name("LeagueClient.exe").unwrap() != 0
     }
-
-    process_id != 0
 }
 
 pub fn get_process_id_by_name(process_name: &str) -> Result<std::os::raw::c_ulong> {

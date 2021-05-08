@@ -41,7 +41,7 @@ fn main() -> eyre::Result<()> {
     let now = std::time::Instant::now();
 
     loop {
-        if league_exists(true) {
+        if league_exists(false) {
             if now.elapsed().as_millis() < 1000 {
                 println!("Found LeagueClient.exe in {}ms!", now.elapsed().as_millis());
             } else {
