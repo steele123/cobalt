@@ -25,13 +25,13 @@ fn sleep() { thread::sleep(Duration::from_millis(SLEEP_TIME_MS)); }
 fn watch(tx: &Sender<Events>) {
     let mut state = true;
     loop {
-        if state != league_exists() {
+        if state != league_exists(true) {
             if state {
                 tx.send(Events::Disconnected).unwrap()
             } else {
                 tx.send(Events::Connected).unwrap()
             }
-            state = league_exists();
+            state = league_exists(true);
         }
 
         sleep();

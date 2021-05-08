@@ -1,4 +1,4 @@
-use std::{ffi::CStr, io::Error};
+use std::{ffi::CStr, io::Error, os::raw::c_ulong};
 
 use bindings::Windows::Win32::{
     SystemServices::{CHAR, INVALID_HANDLE_VALUE},
@@ -31,10 +31,12 @@ pub fn get_lock_file_path() -> Result<String> {
     }
 }
 
-pub fn league_exists() -> bool {
-    let process_id = get_process_id_by_name("LeagueClient.exe").unwrap();
-
-    process_id != 0
+pub fn league_exists(ui_process: bool) -> bool {
+    if ui_process {
+        get_process_id_by_name("LeagueClientUx.exe").unwrap() != 0
+    } else {
+        get_process_id_by_name("LeagueClient.exe").unwrap() != 0
+    }
 }
 
 pub fn get_process_id_by_name(process_name: &str) -> Result<std::os::raw::c_ulong> {
