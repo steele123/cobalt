@@ -1,5 +1,5 @@
 [package]
-name = "kataRUST"
+name = "cobalt"
 version = "0.1.0"
 authors = ["Steele Scott <steele@steele.gg>", "Tyler Hill <tyler@oxide.fi>"]
 edition = "2018"
