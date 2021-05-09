@@ -1,6 +1,7 @@
 [package]
 name = "cobalt"
 version = "0.1.0"
+build = "build.rs"
 authors = ["Steele Scott <steele@steele.gg>", "Tyler Hill <tyler@oxide.fi>"]
 edition = "2018"
 
@@ -11,3 +12,6 @@ attohttpc = "0.17.0"
 base64 = "0.13.0"
 eyre = "0.6.5"
 bindings = { path = "bindings" }
+
+[target.'cfg(target_os="windows")'.build-dependencies]
+winres = "0.1.11"
