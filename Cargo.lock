@@ -80,6 +80,9 @@ dependencies = [
 [[package]]
 name = "cobalt-launcher"
 version = "0.1.0"
+dependencies = [
+ "winres",
+]
 
 [[package]]
 name = "const-sha1"
