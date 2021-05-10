@@ -5,12 +5,14 @@ use bindings::Windows::Win32::{
     WindowsAndMessaging::{GetMessageW, HWND, WPARAM},
 };
 
+#[derive(Copy, Clone)]
 pub enum Key {
     D = 0x44,
     B = 0x42,
     CONTROL = 0x11,
 }
 
+#[derive(Copy, Clone)]
 pub enum Modifiers {
     ALT = HOT_KEY_MODIFIERS::MOD_ALT.0 as isize,
     CTRL = HOT_KEY_MODIFIERS::MOD_CONTROL.0 as isize,
@@ -21,7 +23,14 @@ pub enum Modifiers {
 
 pub struct KeyListener {
     last_id: i32,
-    handlers: HashMap<i32, Box<dyn Fn()>>,
+    handlers: HashMap<i32, HotKey>,
+}
+
+struct HotKey {
+    id: i32,
+    mods: Modifiers,
+    key: Key,
+    callback: Box<dyn Fn() + Send>,
 }
 
 impl KeyListener {
@@ -32,38 +41,40 @@ impl KeyListener {
         }
     }
 
-    pub fn register_hotkey<Callback: 'static + Fn()>(
-        &mut self,
-        mods: Modifiers,
-        key: Key,
-        callback: Callback,
-    ) -> eyre::Result<i32> {
+    pub fn register_hotkey<F: 'static>(&mut self, mods: Modifiers, key: Key, callback: F) -> eyre::Result<i32>
+    where
+        F: Fn() + Send,
+    {
         self.last_id += 1;
-        let id = self.last_id;
-        let result: bool =
-            unsafe { RegisterHotKey(HWND::default(), id, HOT_KEY_MODIFIERS::from(mods as u32), key as u32).into() };
 
-        if !result {
-            return Err(eyre::eyre!("Failed to register the hotkey".to_string()));
-        }
+        let hk = HotKey {
+            id: self.last_id,
+            mods,
+            key,
+            callback: Box::new(callback),
+        };
 
-        self.handlers.insert(id, Box::new(callback));
+        self.handlers.insert(self.last_id, hk);
 
-        Ok(id)
+        Ok(self.last_id)
     }
 
     pub fn listen(self) {
-        unsafe {
+        std::thread::spawn(move || unsafe {
+            for (i, hk) in &self.handlers {
+                RegisterHotKey(HWND::default(), *i, HOT_KEY_MODIFIERS::from(hk.mods as u32), hk.key as u32);
+            }
+
             loop {
                 let mut msg = MaybeUninit::assume_init(std::mem::MaybeUninit::uninit());
                 while GetMessageW(&mut msg, HWND::default(), 0, 0) != false {
                     if msg.wParam != WPARAM::NULL {
-                        if let Some(callback) = self.handlers.get(&(msg.wParam.0 as _)) {
-                            callback();
+                        if let Some(hotkey) = self.handlers.get(&(msg.wParam.0 as _)) {
+                            (hotkey.callback)();
                         }
                     }
                 }
             }
-        }
+        });
     }
 }

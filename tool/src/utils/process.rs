@@ -1,4 +1,4 @@
-use std::{ffi::CStr, io::Error, os::raw::c_ulong};
+use std::{ffi::CStr, io::Error};
 
 use bindings::Windows::Win32::{
     SystemServices::{CHAR, INVALID_HANDLE_VALUE},
