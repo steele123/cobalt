@@ -1,3 +1,4 @@
+#![feature(in_band_lifetimes)]
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::perf)]
 #![allow(
     clippy::cast_possible_truncation,
@@ -38,18 +39,14 @@ fn main() -> eyre::Result<()> {
 
     let now = std::time::Instant::now();
 
-    loop {
-        if league_exists(false) {
-            if now.elapsed().as_millis() < 1000 {
-                println!("Found LeagueClient.exe in {}ms!", now.elapsed().as_millis());
-            } else {
-                println!("Found LeagueClient.exe in {:.2}s!", now.elapsed().as_secs_f64());
-            }
-
-            break;
-        }
-
+    while !league_exists(false) {
         std::thread::sleep(std::time::Duration::from_secs(2));
+    }
+
+    if now.elapsed().as_millis() < 1000 {
+        println!("Found LeagueClient.exe in {}ms!", now.elapsed().as_millis());
+    } else {
+        println!("Found LeagueClient.exe in {:.2}s!", now.elapsed().as_secs_f64());
     }
 
     let path = utils::process::get_lock_file_path()?;
@@ -60,39 +57,37 @@ fn main() -> eyre::Result<()> {
 
     let rx = process_worker::spawn();
 
-    std::thread::spawn(enclose! { (lcu) move || {
-        let mut key_listener = KeyListener::new();
+    let mut key_listener = KeyListener::new();
 
-        key_listener
-            .register_hotkey(
-                Modifiers::CTRL,
-                Key::D,
-                enclose! {(lcu) move || {
-                    println!("Lobby Crash Queued...");
-                    #[cfg(not(debug_assertions))]
-                    lcu.crash_lobby().unwrap();
-                    #[cfg(debug_assertions)]
-                    println!("Debug Assertions are on so you don't go into TFT");
+    key_listener
+        .register_hotkey(
+            Modifiers::CTRL,
+            Key::D,
+            enclose! {(lcu) move || {
+                println!("Lobby Crash Queued...");
+                #[cfg(not(debug_assertions))]
+                lcu.crash_lobby().unwrap();
+                #[cfg(debug_assertions)]
+                println!("Debug Assertions are on so you don't go into TFT");
 
-                println!("Lobby has been dodged, you can leave the TFT game after ~45 seconds.");
-                }},
-            )
-            .unwrap();
+            println!("Lobby has been dodged, you can leave the TFT game after ~45 seconds.");
+            }},
+        )
+        .unwrap();
 
-        key_listener
-            .register_hotkey(
-                Modifiers::CTRL,
-                Key::B,
-                enclose! {(lcu) move || {
-                    println!("ARAM Boost Queued...");
-                    lcu.send(&Endpoints::AramBoost, &Method::POST, "").unwrap();
-                    println!("ARAM Boost Completed...");
-                }},
-            )
-            .unwrap();
+    key_listener
+        .register_hotkey(
+            Modifiers::CTRL,
+            Key::B,
+            enclose! {(lcu) move || {
+                println!("ARAM Boost Queued...");
+                lcu.send(&Endpoints::AramBoost, &Method::POST, "").unwrap();
+                println!("ARAM Boost Completed...");
+            }},
+        )
+        .unwrap();
 
-        key_listener.listen();
-    }});
+    key_listener.listen();
 
     while let Ok(event) = rx.recv() {
         match event {

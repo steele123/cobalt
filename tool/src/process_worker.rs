@@ -6,7 +6,7 @@ use std::{
 
 use crate::utils::process::league_exists;
 
-const SLEEP_TIME_MS: u64 = 25;
+const SLEEP_TIME: Duration = Duration::from_millis(25);
 
 pub enum Events {
     Connected,
@@ -20,7 +20,7 @@ pub fn spawn() -> Receiver<Events> {
 
     rx
 }
-fn sleep() { thread::sleep(Duration::from_millis(SLEEP_TIME_MS)); }
+fn sleep() { thread::sleep(SLEEP_TIME) }
 
 fn watch(tx: &Sender<Events>) {
     let mut state = true;
