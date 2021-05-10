@@ -8,8 +8,6 @@
     clippy::upper_case_acronyms
 )]
 
-use std::sync::{Arc, Mutex};
-
 use console::Console;
 use process_worker::Events;
 use utils::{
@@ -58,10 +56,7 @@ fn main() -> eyre::Result<()> {
 
     let lock_file_info = utils::lock_file::parse(&path)?;
 
-    let lcu = Arc::new(Mutex::new(utils::lcu::LCUClient::new(
-        &lock_file_info.token,
-        lock_file_info.port,
-    )?));
+    let mut lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port)?;
 
     let rx = process_worker::spawn();
 
@@ -75,7 +70,7 @@ fn main() -> eyre::Result<()> {
                 enclose! {(lcu) move || {
                     println!("Lobby Crash Queued...");
                     #[cfg(not(debug_assertions))]
-                    lcu.lock().unwrap().crash_lobby().unwrap();
+                    lcu.crash_lobby().unwrap();
                     #[cfg(debug_assertions)]
                     println!("Debug Assertions are on so you don't go into TFT");
 
@@ -90,11 +85,7 @@ fn main() -> eyre::Result<()> {
                 Key::B,
                 enclose! {(lcu) move || {
                     println!("ARAM Boost Queued...");
-                    lcu
-                        .lock()
-                        .unwrap()
-                        .send(&Endpoints::AramBoost, &Method::POST, "")
-                        .unwrap();
+                    lcu.send(&Endpoints::AramBoost, &Method::POST, "").unwrap();
                     println!("ARAM Boost Completed...");
                 }},
             )
@@ -108,11 +99,11 @@ fn main() -> eyre::Result<()> {
             Events::Connected => {
                 let path = utils::process::get_lock_file_path().unwrap();
                 let lock_file_info = utils::lock_file::parse(&path).unwrap();
-                lcu.lock().unwrap().reconnect(&lock_file_info.token, lock_file_info.port);
+                lcu.reconnect(&lock_file_info.token, lock_file_info.port);
                 println!("Successfully reconnected to the League Client");
             },
             Events::Disconnected => {
-                lcu.lock().unwrap().disconnect();
+                lcu.disconnect();
                 println!("League Client has been disconnected we will attempt to reconnect to it...");
             },
         }
