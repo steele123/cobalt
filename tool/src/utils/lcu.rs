@@ -1,29 +1,40 @@
+use std::sync::{Arc, RwLock};
+
 use attohttpc::Response;
 use eyre::Result;
 
+#[derive(Clone)]
 pub struct LCUClient {
+    inner: Arc<RwLock<LCUClientInner>>,
+}
+
+struct LCUClientInner {
     base: String,
     token: String,
-    pub can_send: bool,
+    can_send: bool,
 }
 
 impl LCUClient {
     pub fn new(token: &str, port: i32) -> Result<Self> {
         Ok(Self {
-            base: format!("https://127.0.0.1:{}", port),
-            token: format!("Basic {}", token),
-            can_send: true,
+            inner: Arc::new(RwLock::new(LCUClientInner {
+                base: format!("https://127.0.0.1:{}", port),
+                token: format!("Basic {}", token),
+                can_send: true,
+            })),
         })
     }
 
     pub fn send(&self, endpoint: &Endpoints, method: &Method, payload: &str) -> Result<Response> {
+        let lcu_inner = self.inner.read().unwrap();
+
         match method {
-            Method::GET => Ok(attohttpc::get(&format!("{}{}", self.base, endpoint.as_endpoint()))
-                .header("Authorization", &self.token)
+            Method::GET => Ok(attohttpc::get(&format!("{}{}", lcu_inner.base, endpoint.as_endpoint()))
+                .header("Authorization", &lcu_inner.token)
                 .danger_accept_invalid_certs(true)
                 .send()?),
-            Method::POST => Ok(attohttpc::post(&format!("{}{}", self.base, endpoint.as_endpoint()))
-                .header("Authorization", &self.token)
+            Method::POST => Ok(attohttpc::post(&format!("{}{}", lcu_inner.base, endpoint.as_endpoint()))
+                .header("Authorization", &lcu_inner.token)
                 .header_append("Content-Type", "application/json")
                 .danger_accept_invalid_certs(true)
                 .text(payload)
@@ -50,12 +61,17 @@ impl LCUClient {
     }
 
     pub fn reconnect(&mut self, token: &str, port: i32) {
-        self.base = format!("https://127.0.0.1:{}", port);
-        self.token = format!("Basic {}", token);
-        self.can_send = true;
+        let mut lcu_inner = self.inner.write().unwrap();
+        lcu_inner.base = format!("https://127.0.0.1:{}", port);
+        lcu_inner.token = format!("Basic {}", token);
+        lcu_inner.can_send = true;
     }
 
-    pub fn disconnect(&mut self) { self.can_send = false; }
+    pub fn disconnect(&mut self) {
+        let mut lcu_inner = self.inner.write().unwrap();
+
+        lcu_inner.can_send = false;
+    }
 }
 
 pub enum Endpoints {
