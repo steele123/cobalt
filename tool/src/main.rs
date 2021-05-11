@@ -9,6 +9,7 @@
     clippy::upper_case_acronyms
 )]
 
+use colored::*;
 use console::Console;
 use process_worker::Events;
 use utils::{
@@ -33,7 +34,7 @@ macro_rules! enclose {
 }
 
 fn main() -> eyre::Result<()> {
-    Console::welcome_message();
+    Console::setup();
 
     println!("Trying to find the LeagueClient.exe process...");
 
@@ -70,7 +71,7 @@ fn main() -> eyre::Result<()> {
                 #[cfg(debug_assertions)]
                 println!("Debug Assertions are on so you don't go into TFT");
 
-            println!("Lobby has been dodged, you can leave the TFT game after ~45 seconds.");
+            println!("{}", "Lobby has been dodged, you can leave the TFT game after ~45 seconds.".bright_green());
             }},
         )
         .unwrap();
@@ -82,7 +83,7 @@ fn main() -> eyre::Result<()> {
             enclose! {(lcu) move || {
                 println!("ARAM Boost Queued...");
                 lcu.send(&Endpoints::AramBoost, &Method::POST, "").unwrap();
-                println!("ARAM Boost Completed...");
+                println!("{}", "ARAM Boost Completed...".bright_green());
             }},
         )
         .unwrap();
@@ -95,11 +96,14 @@ fn main() -> eyre::Result<()> {
                 let path = utils::process::get_lock_file_path().unwrap();
                 let lock_file_info = utils::lock_file::parse(&path).unwrap();
                 lcu.reconnect(&lock_file_info.token, lock_file_info.port);
-                println!("Successfully reconnected to the League Client");
+                println!("{}", "Successfully reconnected to the League Client".bright_green());
             },
             Events::Disconnected => {
                 lcu.disconnect();
-                println!("League Client has been disconnected we will attempt to reconnect to it...");
+                println!(
+                    "{}",
+                    "League Client has been disconnected we will attempt to reconnect to it...".red()
+                );
             },
         }
     }
