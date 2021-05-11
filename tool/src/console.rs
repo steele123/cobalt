@@ -20,9 +20,9 @@ impl Console {
             .bright_blue()
         );
 
-        println!("{} {}", "Download URL:", "https://steele.gg/tools/cobalt".bright_green());
+        println!("{} {}", "\nDownload URL:", "https://steele.gg/tools/cobalt".bright_green());
 
-        println!("{}", "This tool will never cost money, if you paid you got scammed\n".red());
+        println!("This tool will never cost money, if you paid you got {}", "scammed\n".red());
 
         println!("{}", "*** Hotkeys ***".bright_yellow());
         println!(
