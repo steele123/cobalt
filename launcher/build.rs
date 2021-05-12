@@ -8,19 +8,17 @@ fn main() {
     if std::env::var("PROFILE").unwrap() == "release" {
         let mut res = winres::WindowsResource::new();
 
-        res.set_icon("../shared/icon.ico");
+        res.set_icon("../shared/resources/icon.ico");
 
         match res.compile() {
             Err(e) => {
                 write!(std::io::stderr(), "{}", e).unwrap();
                 std::process::exit(1);
-            }
-            Ok(_) => {}
+            },
+            Ok(_) => {},
         }
     }
 }
 
 #[cfg(not(target_os = "windows"))]
-fn main() {
-
-}
+fn main() {}

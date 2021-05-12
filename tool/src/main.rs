@@ -60,6 +60,7 @@ fn main() -> eyre::Result<()> {
 
     let mut key_listener = KeyListener::new();
 
+    #[allow(unused_variables)]
     key_listener
         .register_hotkey(
             Modifiers::CTRL,

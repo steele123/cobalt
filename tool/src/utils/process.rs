@@ -1,12 +1,7 @@
-use std::{ffi::CStr, io::Error};
+use std::io::Error;
 
-use bindings::Windows::Win32::{
-    SystemServices::{CHAR, INVALID_HANDLE_VALUE},
-    ToolHelp::{
-        CreateToolhelp32Snapshot, Module32First, Process32First, Process32Next, CREATE_TOOLHELP_SNAPSHOT_FLAGS,
-        MODULEENTRY32, PROCESSENTRY32,
-    },
-    WindowsProgramming::CloseHandle,
+use bindings::Windows::Win32::ToolHelp::{
+    CreateToolhelp32Snapshot, Module32First, CREATE_TOOLHELP_SNAPSHOT_FLAGS, MODULEENTRY32,
 };
 use eyre::Result;
 use win_utils::{convert_windows_string, get_process_id_by_name};

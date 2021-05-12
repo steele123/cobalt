@@ -6,7 +6,7 @@ use bindings::Windows::Win32::ToolHelp::{
     PROCESSENTRY32,
 };
 use bindings::Windows::Win32::WindowsProgramming::CloseHandle;
-use eyre::{Error, Result};
+use eyre::Result;
 use std::ffi::CStr;
 
 pub fn get_process_id_by_name(process_name: &str) -> Result<std::os::raw::c_ulong> {

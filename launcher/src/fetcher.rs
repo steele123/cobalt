@@ -4,7 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use eyre::{Error, Result};
+use eyre::Result;
 use obfstr::obfstr;
 
 pub struct Fetcher;
@@ -23,7 +23,7 @@ impl Fetcher {
     }
 
     pub fn get_cached_version() -> String {
-        let mut dir = get_version_dir();
+        let dir = get_version_dir();
 
         if !Path::new(dir.as_path()).exists() {
             return "0.0.0".into();
@@ -67,15 +67,13 @@ fn download_tool() -> Result<String> {
 
     let path = Path::new(appdata_dir.as_path());
 
-    let bytes = resp.bytes()?;
-
     let mut decomp: Vec<u8> = Vec::new();
 
     let mut file = File::create(&path)?;
 
     lzma_rs::xz_decompress(&mut std::io::BufReader::new(file.try_clone().unwrap()), &mut decomp).unwrap();
 
-    file.write_all(&decomp);
+    file.write_all(&decomp).unwrap();
 
     Ok(path.to_str().unwrap().into())
 }

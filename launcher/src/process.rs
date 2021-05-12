@@ -1,14 +1,9 @@
-use std::{ffi::CStr, io::Error};
+use std::io::Error;
 
 use bindings::Windows::Win32::{
-    SystemServices::{
-        CreateProcessW, OpenProcess, TerminateProcess, CHAR, INVALID_HANDLE_VALUE, PROCESS_ACCESS_RIGHTS,
-        PROCESS_INFORMATION, PWSTR, STARTUPINFOW, STARTUPINFOW_FLAGS,
-    },
-    ToolHelp::{CreateToolhelp32Snapshot, Process32First, Process32Next, CREATE_TOOLHELP_SNAPSHOT_FLAGS, PROCESSENTRY32},
+    SystemServices::{CreateProcessW, PROCESS_INFORMATION, PWSTR, STARTUPINFOW, STARTUPINFOW_FLAGS},
     WindowsProgramming::{CloseHandle, PROCESS_CREATION_FLAGS},
 };
-use win_utils::get_process_id_by_name;
 
 fn str_to_pwstr(string: &str) -> PWSTR {
     PWSTR(std::boxed::Box::<[u16]>::into_raw(

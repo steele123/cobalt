@@ -5,7 +5,7 @@ pub struct Console;
 impl Console {
     pub fn setup() {
         // need this for windows to enable ANSI :)
-        colored::control::set_virtual_terminal(true);
+        colored::control::set_virtual_terminal(true).unwrap();
 
         println!(
             "{}",
