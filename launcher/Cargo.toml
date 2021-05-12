@@ -1,6 +1,7 @@
 [package]
-name = "kataRUST-launcher"
+name = "cobalt-launcher"
 version = "0.1.0"
+build = "build.rs"
 authors = ["Steele Scott <steele@steele.gg>" , "Tyler Hill <tyler@oxide.fi>"]
 edition = "2018"
 
@@ -9,8 +10,11 @@ edition = "2018"
 [dependencies]
 eyre = "0.6.5"
 attohttpc = "0.17.0"
-litcrypt = "0.2.1"
 base64 = "0.13.0"
+dirs = "3.0.2"
+obfstr = "0.3.0"
+win-utils = { path = "../shared/win-utils" }
+bindings = { path = "../shared/bindings" }
 
 [target.'cfg(target_os="windows")'.build-dependencies]
 winres = "0.1.11"
