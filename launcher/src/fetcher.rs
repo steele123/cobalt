@@ -71,7 +71,9 @@ fn download_tool() -> Result<String> {
 
     let mut file = File::create(&path)?;
 
-    lzma_rs::xz_decompress(&mut std::io::BufReader::new(file.try_clone().unwrap()), &mut decomp).unwrap();
+    let input = resp.bytes().unwrap();
+
+    lzma_rs::xz_decompress(&mut input.as_slice(), &mut decomp).unwrap();
 
     file.write_all(&decomp).unwrap();
 
