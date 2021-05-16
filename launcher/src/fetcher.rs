@@ -1,11 +1,12 @@
 use std::{
     fs::File,
-    io::Write,
+    io::{Read, Write},
     path::{Path, PathBuf},
 };
 
 use eyre::Result;
 use obfstr::obfstr;
+use xz2::read::{XzDecoder, XzEncoder};
 
 pub struct Fetcher;
 
@@ -67,15 +68,17 @@ fn download_tool() -> Result<String> {
 
     let path = Path::new(appdata_dir.as_path());
 
-    let mut decomp: Vec<u8> = Vec::new();
-
     let mut file = File::create(&path)?;
 
     let input = resp.bytes().unwrap();
 
-    lzma_rs::xz_decompress(&mut input.as_slice(), &mut decomp).unwrap();
+    let mut bytes: Vec<u8> = Vec::new();
 
-    file.write_all(&decomp).unwrap();
+    let mut decomp = XzDecoder::new(input.as_slice());
+
+    decomp.read_to_end(&mut bytes)?;
+
+    file.write_all(bytes.as_slice()).unwrap();
 
     Ok(path.to_str().unwrap().into())
 }
