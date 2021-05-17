@@ -26,8 +26,8 @@ impl Console {
 
         println!(
             "{}",
-            "This program uses an exploit and with very low odds could get you banned, I am not responsible for any bans \
-             \nthat happen to your account. Use at your own risk!\n"
+            "Disclaimer\nAlthough this program has never had any reported bans it is a 3rd party tool and could \
+             \npotentially be bannable. Use at your own risk I am not responsible for your account\n"
                 .bright_red()
         );
 
