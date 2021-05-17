@@ -1,6 +1,6 @@
 [package]
 name = "cobalt"
-version = "1.0.0"
+version = "1.0.2"
 build = "build.rs"
 authors = ["Steele Scott <steele@steele.gg>", "Tyler Hill <tyler@oxide.fi>"]
 edition = "2018"

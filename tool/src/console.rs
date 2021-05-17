@@ -24,6 +24,14 @@ impl Console {
 
         println!("This tool will never cost money, if you paid you got {}", "scammed\n".red());
 
+        println!(
+            "{}",
+            "WARNING, THERE HAVE BEEN REPORTS OF 1 - 3 ACCOUNTS BEING BANNED USING A TOOL THAT USES THE SAME EXPLOIT AS \
+             COBALT\n NO ONE HAS BEEN BANNED THAT HAS USED COBALT BUT THIS IS JUST A WARNING, THE BAN RATES ARE EXTREMELY \
+             LOW BUT STILL POSSIBLE! YOU HAVE BEEN WARNED\n"
+                .bright_red()
+        );
+
         println!("{}", "*** Hotkeys ***".bright_yellow());
         println!(
             "{} - Will dodge your current lobby (use this in the last 30 seconds of the lobby for best results)",
