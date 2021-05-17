@@ -26,9 +26,8 @@ impl Console {
 
         println!(
             "{}",
-            "WARNING, THERE HAVE BEEN REPORTS OF 1 - 3 ACCOUNTS BEING BANNED USING A TOOL THAT USES THE SAME EXPLOIT AS \
-             COBALT\n NO ONE HAS BEEN BANNED THAT HAS USED COBALT BUT THIS IS JUST A WARNING, THE BAN RATES ARE EXTREMELY \
-             LOW BUT STILL POSSIBLE! YOU HAVE BEEN WARNED\n"
+            "This program uses an exploit and with very low odds could get you banned, I am not responsible for any bans \
+             \nthat happen to your account. Use at your own risk!\n"
                 .bright_red()
         );
 

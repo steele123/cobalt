@@ -14,6 +14,9 @@ struct LCUClientInner {
     can_send: bool,
 }
 
+const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) \
+                          LeagueOfLegendsClient/11.10.374.9538 (CEF 74) Safari/537.36";
+
 impl LCUClient {
     pub fn new(token: &str, port: i32) -> Result<Self> {
         Ok(Self {
@@ -31,11 +34,13 @@ impl LCUClient {
         match method {
             Method::GET => Ok(attohttpc::get(&format!("{}{}", lcu_inner.base, endpoint.as_endpoint()))
                 .header("Authorization", &lcu_inner.token)
+                .header_append("User-Agent", USER_AGENT)
                 .danger_accept_invalid_certs(true)
                 .send()?),
             Method::POST => Ok(attohttpc::post(&format!("{}{}", lcu_inner.base, endpoint.as_endpoint()))
                 .header("Authorization", &lcu_inner.token)
                 .header_append("Content-Type", "application/json")
+                .header_append("User-Agent", USER_AGENT)
                 .danger_accept_invalid_certs(true)
                 .text(payload)
                 .send()?),
@@ -46,8 +51,6 @@ impl LCUClient {
         let is_lobby = self.send(&Endpoints::ChampSelect, &Method::GET, "")?.is_success();
 
         if !is_lobby {
-            // TODO: Eh i mean we could do some proper error handling but this here isn't
-            // really  a big deal since it isn't a proper error
             return Ok(());
         }
 
