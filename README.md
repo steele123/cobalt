@@ -5,7 +5,7 @@ Download the launcher from my [website](https://steele.gg/tools/cobalt)
 
 Build With Cargo cargo build --bin cobalt --release
 
-Download from the releases tab on github
+Download from the releases tab on [GitHub](https://github.com/steele123/cobalt/releases)
 
 ## Project Hierarchy
 The tool directory is the tool itself, the launcher is what manages automatically updating the tool by downloading a compressed .xz file from my websites server. You can boot the tool up successfully by itself without the launcher but you will not get any automatic updates.
