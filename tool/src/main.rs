@@ -11,6 +11,8 @@
 
 use colored::*;
 use console::Console;
+use iced::{Application, Settings};
+use image::GenericImageView;
 use process_worker::Events;
 use utils::{
     input::{Key, KeyListener, Modifiers},
@@ -21,6 +23,8 @@ use utils::{
 mod utils;
 
 mod console;
+
+mod app;
 
 mod process_worker;
 
@@ -34,6 +38,30 @@ macro_rules! enclose {
 }
 
 fn main() -> eyre::Result<()> {
+    let bytes = include_bytes!("../../shared/resources/icon.ico");
+    let img = image::load_from_memory(bytes).unwrap();
+    let img_dims = img.dimensions();
+    let img_raw = img.into_rgb8().into_raw();
+    let icon = iced::window::Icon::from_rgba(img_raw, img_dims.0, img_dims.1).unwrap();
+
+    let settings = Settings {
+        window: iced::window::Settings {
+            size: (1024, 768),
+            resizable: true,
+            decorations: true,
+            min_size: Some((800, 600)),
+            max_size: None,
+            transparent: false,
+            always_on_top: false,
+            icon: Some(icon),
+        },
+        antialiasing: true,
+        ..Default::default()
+    };
+
+    app::App::run(settings);
+
+    /*
     Console::setup();
 
     println!("Trying to find the LeagueClient.exe process...");
@@ -107,7 +135,7 @@ fn main() -> eyre::Result<()> {
                 );
             },
         }
-    }
+    }*/
 
     Ok(())
 }
