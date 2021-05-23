@@ -89,6 +89,16 @@ fn main() -> eyre::Result<()> {
         )
         .unwrap();
 
+    key_listener
+        .register_hotkey(
+            Modifiers::CTRL,
+            Key::R,
+            enclose! {(lcu) move || {
+                println!("Cobalt will not restart the league client")
+            }},
+        )
+        .unwrap();
+
     key_listener.listen();
 
     while let Ok(event) = rx.recv() {

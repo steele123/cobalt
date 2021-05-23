@@ -31,14 +31,25 @@ impl Console {
                 .bright_red()
         );
 
+        println!(
+            "Cobalt now has a stealth mode if you let Cobalt start the league client no one will see you leave the lobby \
+             :) (thanks to https://github.com/molenzwiebel/Deceive)"
+        );
+
         println!("{}", "*** Hotkeys ***".bright_yellow());
         println!(
             "{} - Will dodge your current lobby (use this in the last 30 seconds of the lobby for best results)",
             "CTRL+D".bright_purple(),
         );
         println!(
-            "{} - As long as you are under 195 RP this will get you a free battle boost (ARAM and other gamemodes)\n",
+            "{} - As long as you are under 195 RP this will get you a free battle boost (ARAM and other game modes)",
             "CTRL+B".bright_purple()
+        );
+
+        println!(
+            "{} - This will restart your league client and enable stealth mode so no one is able to see you leave the \
+             lobby (recommended not required)\n",
+            "CTRL+R".bright_purple()
         );
     }
 }

@@ -12,6 +12,7 @@ struct LCUClientInner {
     base: String,
     token: String,
     can_send: bool,
+    stealth_mode: bool,
 }
 
 const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) \
@@ -24,6 +25,7 @@ impl LCUClient {
                 base: format!("https://127.0.0.1:{}", port),
                 token: format!("Basic {}", token),
                 can_send: true,
+                stealth_mode: false,
             })),
         })
     }
@@ -62,6 +64,8 @@ impl LCUClient {
 
         Ok(())
     }
+
+    pub fn enable_stealth(&self) {}
 
     pub fn reconnect(&mut self, token: &str, port: i32) {
         let mut lcu_inner = self.inner.write().unwrap();

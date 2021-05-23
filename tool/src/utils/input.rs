@@ -9,6 +9,7 @@ use bindings::Windows::Win32::UI::{
 pub enum Key {
     D = 0x44,
     B = 0x42,
+    R = 0x52,
     CONTROL = 0x11,
 }
 
