@@ -65,7 +65,14 @@ impl LCUClient {
         Ok(())
     }
 
-    pub fn enable_stealth(&self) {}
+    pub fn enable_stealth(&self) {
+        let lcu_inner = self.inner.write().unwrap();
+
+        if lcu_inner.stealth_mode {
+            println!("Stealth mode is already enabled!");
+            return;
+        }
+    }
 
     pub fn reconnect(&mut self, token: &str, port: i32) {
         let mut lcu_inner = self.inner.write().unwrap();

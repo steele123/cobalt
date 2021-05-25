@@ -24,6 +24,8 @@ pub fn get_lock_file_path() -> Result<String> {
     }
 }
 
+pub fn kill_league_process() {}
+
 pub fn league_exists(ui_process: bool) -> bool {
     if ui_process {
         get_process_id_by_name("LeagueClientUx.exe").unwrap() != 0

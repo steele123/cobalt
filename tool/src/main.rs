@@ -94,7 +94,8 @@ fn main() -> eyre::Result<()> {
             Modifiers::CTRL,
             Key::R,
             enclose! {(lcu) move || {
-                println!("Cobalt will not restart the league client")
+                println!("Stealth Mode Queued...");
+                lcu.enable_stealth();
             }},
         )
         .unwrap();
