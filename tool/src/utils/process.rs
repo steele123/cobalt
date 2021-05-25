@@ -1,7 +1,8 @@
 use std::io::Error;
 
-use bindings::Windows::Win32::ToolHelp::{
-    CreateToolhelp32Snapshot, Module32First, CREATE_TOOLHELP_SNAPSHOT_FLAGS, MODULEENTRY32,
+use bindings::Windows::Win32::System::Diagnostics::{
+    ToolHelp,
+    ToolHelp::{CreateToolhelp32Snapshot, Module32First, MODULEENTRY32},
 };
 use eyre::Result;
 use win_utils::{convert_windows_string, get_process_id_by_name};
@@ -9,7 +10,7 @@ use win_utils::{convert_windows_string, get_process_id_by_name};
 pub fn get_lock_file_path() -> Result<String> {
     let process_id = get_process_id_by_name("LeagueClient.exe")?;
 
-    let module_snapshot = unsafe { CreateToolhelp32Snapshot(CREATE_TOOLHELP_SNAPSHOT_FLAGS::TH32CS_SNAPMODULE, process_id) };
+    let module_snapshot = unsafe { CreateToolhelp32Snapshot(ToolHelp::TH32CS_SNAPMODULE, process_id) };
 
     let mut module_entry = MODULEENTRY32 {
         dwSize: std::mem::size_of::<MODULEENTRY32>() as u32,

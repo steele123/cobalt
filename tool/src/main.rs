@@ -9,7 +9,7 @@
     clippy::upper_case_acronyms
 )]
 
-use colored::*;
+use colored::Colorize;
 use console::Console;
 use process_worker::Events;
 use utils::{

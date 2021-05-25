@@ -1,8 +1,11 @@
 use std::io::Error;
 
-use bindings::Windows::Win32::{
-    SystemServices::{CreateProcessW, PROCESS_INFORMATION, PWSTR, STARTUPINFOW, STARTUPINFOW_FLAGS},
-    WindowsProgramming::{CloseHandle, PROCESS_CREATION_FLAGS},
+use bindings::Windows::Win32::System::{
+    SystemServices::PWSTR,
+    Threading::{
+        CreateProcessW, CREATE_NEW_CONSOLE, PROCESS_INFORMATION, STARTF_TITLEISAPPID, STARTF_USESTDHANDLES, STARTUPINFOW,
+    },
+    WindowsProgramming::CloseHandle,
 };
 
 fn str_to_pwstr(string: &str) -> PWSTR {
@@ -16,11 +19,11 @@ fn str_to_pwstr(string: &str) -> PWSTR {
 }
 
 pub fn create_process(path: String) -> eyre::Result<()> {
-    let flags = PROCESS_CREATION_FLAGS::CREATE_NEW_CONSOLE;
+    let flags = CREATE_NEW_CONSOLE;
 
     let mut startup_info = STARTUPINFOW {
         cb: std::mem::size_of::<STARTUPINFOW>() as _,
-        dwFlags: STARTUPINFOW_FLAGS::STARTF_USESTDHANDLES | STARTUPINFOW_FLAGS::STARTF_TITLEISAPPID,
+        dwFlags: STARTF_USESTDHANDLES | STARTF_TITLEISAPPID,
         ..Default::default()
     };
 

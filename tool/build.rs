@@ -3,8 +3,6 @@ extern crate winres;
 
 #[cfg(target_os = "windows")]
 fn main() {
-    use std::io::Write;
-
     let release = std::env::var("PROFILE").unwrap() == "release";
 
     if release {
@@ -12,12 +10,9 @@ fn main() {
 
         res.set_icon("../shared/resources/icon.ico");
 
-        match res.compile() {
-            Err(e) => {
-                write!(std::io::stderr(), "{}", e).unwrap();
-                std::process::exit(1);
-            },
-            Ok(_) => {},
+        if let Err(e) = res.compile() {
+            eprint!("{}", e);
+            std::process::exit(1);
         }
     }
 }

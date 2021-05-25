@@ -6,7 +6,7 @@ use std::{
 
 use eyre::Result;
 use obfstr::obfstr;
-use xz2::read::{XzDecoder, XzEncoder};
+use xz2::read::XzDecoder;
 
 pub struct Fetcher;
 
