@@ -1,23 +1,20 @@
-use bindings::Windows::Win32::SystemServices::{
-    OpenProcess, TerminateProcess, CHAR, INVALID_HANDLE_VALUE, PROCESS_ACCESS_RIGHTS,
+use std::{ffi::CStr, os::raw::c_ulong};
+
+use bindings::Windows::Win32::System::{
+    Diagnostics::{
+        ToolHelp,
+        ToolHelp::{CreateToolhelp32Snapshot, Process32First, Process32Next, PROCESSENTRY32},
+    },
+    SystemServices::{CHAR, INVALID_HANDLE_VALUE},
+    Threading::{OpenProcess, TerminateProcess, PROCESS_QUERY_INFORMATION, PROCESS_TERMINATE},
+    WindowsProgramming::CloseHandle,
 };
-use bindings::Windows::Win32::ToolHelp::{
-    CreateToolhelp32Snapshot, Process32First, Process32Next, CREATE_TOOLHELP_SNAPSHOT_FLAGS,
-    PROCESSENTRY32,
-};
-use bindings::Windows::Win32::WindowsProgramming::CloseHandle;
 use eyre::Result;
-use std::ffi::CStr;
 
 pub fn get_process_id_by_name(process_name: &str) -> Result<std::os::raw::c_ulong> {
     let mut process_id: std::os::raw::c_ulong = 0;
 
-    let snapshot = unsafe {
-        CreateToolhelp32Snapshot(
-            CREATE_TOOLHELP_SNAPSHOT_FLAGS::TH32CS_SNAPPROCESS,
-            process_id,
-        )
-    };
+    let snapshot = unsafe { CreateToolhelp32Snapshot(ToolHelp::TH32CS_SNAPPROCESS, process_id) };
 
     if snapshot == INVALID_HANDLE_VALUE {
         return Err(std::io::Error::last_os_error().into());
@@ -51,14 +48,7 @@ pub fn get_process_id_by_name(process_name: &str) -> Result<std::os::raw::c_ulon
 pub fn kill_process_by_name(process_name: &str) {
     let process_id = get_process_id_by_name(process_name).unwrap();
 
-    let process = unsafe {
-        OpenProcess(
-            PROCESS_ACCESS_RIGHTS::PROCESS_TERMINATE
-                | PROCESS_ACCESS_RIGHTS::PROCESS_QUERY_INFORMATION,
-            false,
-            process_id,
-        )
-    };
+    let process = unsafe { OpenProcess(PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION, false, process_id) };
 
     unsafe { TerminateProcess(process, 0) };
 }

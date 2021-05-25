@@ -1,7 +1,7 @@
 use std::{collections::HashMap, mem::MaybeUninit};
 
-use bindings::Windows::Win32::{
-    KeyboardAndMouseInput::{RegisterHotKey, HOT_KEY_MODIFIERS},
+use bindings::Windows::Win32::UI::{
+    KeyboardAndMouseInput::{RegisterHotKey, HOT_KEY_MODIFIERS, MOD_ALT, MOD_CONTROL, MOD_SHIFT},
     WindowsAndMessaging::{GetMessageW, HWND, WPARAM},
 };
 
@@ -14,9 +14,9 @@ pub enum Key {
 
 #[derive(Copy, Clone)]
 pub enum Modifiers {
-    ALT = HOT_KEY_MODIFIERS::MOD_ALT.0 as isize,
-    CTRL = HOT_KEY_MODIFIERS::MOD_CONTROL.0 as isize,
-    SHIFT = HOT_KEY_MODIFIERS::MOD_SHIFT.0 as isize,
+    ALT = MOD_ALT.0 as isize,
+    CTRL = MOD_CONTROL.0 as isize,
+    SHIFT = MOD_SHIFT.0 as isize,
 }
 
 // key codes https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
