@@ -1,11 +1,10 @@
 use std::io::Error;
 
-use bindings::Windows::Win32::System::{
-    SystemServices::PWSTR,
-    Threading::{
+use bindings::Windows::Win32::{
+    Foundation::{CloseHandle, PWSTR},
+    System::Threading::{
         CreateProcessW, CREATE_NEW_CONSOLE, PROCESS_INFORMATION, STARTF_TITLEISAPPID, STARTF_USESTDHANDLES, STARTUPINFOW,
     },
-    WindowsProgramming::CloseHandle,
 };
 
 fn str_to_pwstr(string: &str) -> PWSTR {

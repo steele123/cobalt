@@ -54,40 +54,36 @@ fn main() -> eyre::Result<()> {
 
     let lock_file_info = utils::lock_file::parse(&path)?;
 
-    let mut lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port)?;
+    let mut lcu = utils::lcu::LCUClient::new(&lock_file_info.token, lock_file_info.port);
 
     let rx = process_worker::spawn();
 
     let mut key_listener = KeyListener::new();
 
     #[allow(unused_variables)]
-    key_listener
-        .register_hotkey(
-            Modifiers::CTRL,
-            Key::D,
-            enclose! {(lcu) move || {
-                println!("Lobby Crash Queued...");
-                #[cfg(not(debug_assertions))]
-                lcu.crash_lobby().unwrap();
-                #[cfg(debug_assertions)]
-                println!("Debug Assertions are on so you don't go into TFT");
+    key_listener.register_hotkey(
+        Modifiers::CTRL,
+        Key::D,
+        enclose! {(lcu) move || {
+            println!("Lobby Crash Queued...");
+            #[cfg(not(debug_assertions))]
+            lcu.crash_lobby().unwrap();
+            #[cfg(debug_assertions)]
+            println!("Debug Assertions are on so you don't go into TFT");
 
-            println!("{}", "Lobby has been dodged, you can ff the TFT game as soon as you load into it.".bright_green());
-            }},
-        )
-        .unwrap();
+        println!("{}", "Lobby has been dodged, you can ff the TFT game as soon as you load into it.".bright_green());
+        }},
+    );
 
-    key_listener
-        .register_hotkey(
-            Modifiers::CTRL,
-            Key::B,
-            enclose! {(lcu) move || {
-                println!("ARAM Boost Queued...");
-                lcu.send(&Endpoints::AramBoost, &Method::POST, "").unwrap();
-                println!("{}", "ARAM Boost Completed...".bright_green());
-            }},
-        )
-        .unwrap();
+    key_listener.register_hotkey(
+        Modifiers::CTRL,
+        Key::B,
+        enclose! {(lcu) move || {
+            println!("ARAM Boost Queued...");
+            lcu.send(&Endpoints::AramBoost, &Method::POST, "").unwrap();
+            println!("{}", "ARAM Boost Completed...".bright_green());
+        }},
+    );
 
     key_listener.listen();
 

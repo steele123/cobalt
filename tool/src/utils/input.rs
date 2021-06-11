@@ -1,8 +1,11 @@
 use std::{collections::HashMap, mem::MaybeUninit};
 
-use bindings::Windows::Win32::UI::{
-    KeyboardAndMouseInput::{RegisterHotKey, HOT_KEY_MODIFIERS, MOD_ALT, MOD_CONTROL, MOD_SHIFT},
-    WindowsAndMessaging::{GetMessageW, HWND, WPARAM},
+use bindings::Windows::Win32::{
+    Foundation::{HWND, WPARAM},
+    UI::{
+        KeyboardAndMouseInput::{RegisterHotKey, HOT_KEY_MODIFIERS, MOD_ALT, MOD_CONTROL, MOD_SHIFT},
+        WindowsAndMessaging::GetMessageW,
+    },
 };
 
 #[derive(Copy, Clone)]
@@ -41,7 +44,7 @@ impl KeyListener {
         }
     }
 
-    pub fn register_hotkey<F: 'static>(&mut self, mods: Modifiers, key: Key, callback: F) -> eyre::Result<i32>
+    pub fn register_hotkey<F: 'static>(&mut self, mods: Modifiers, key: Key, callback: F) -> i32
     where
         F: Fn() + Send,
     {
@@ -56,7 +59,7 @@ impl KeyListener {
 
         self.handlers.insert(self.last_id, hk);
 
-        Ok(self.last_id)
+        self.last_id
     }
 
     pub fn listen(self) {
