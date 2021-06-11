@@ -18,14 +18,14 @@ const USER_AGENT: &str = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36
                           LeagueOfLegendsClient/11.10.374.9538 (CEF 74) Safari/537.36";
 
 impl LCUClient {
-    pub fn new(token: &str, port: i32) -> Result<Self> {
-        Ok(Self {
+    pub fn new(token: &str, port: i32) -> Self {
+        Self {
             inner: Arc::new(RwLock::new(LCUClientInner {
                 base: format!("https://127.0.0.1:{}", port),
                 token: format!("Basic {}", token),
                 can_send: true,
             })),
-        })
+        }
     }
 
     pub fn send(&self, endpoint: &Endpoints, method: &Method, payload: &str) -> Result<Response> {

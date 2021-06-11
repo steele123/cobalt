@@ -1,13 +1,15 @@
-use std::{ffi::CStr, os::raw::c_ulong};
+use std::ffi::CStr;
 
-use bindings::Windows::Win32::System::{
-    Diagnostics::{
-        ToolHelp,
-        ToolHelp::{CreateToolhelp32Snapshot, Process32First, Process32Next, PROCESSENTRY32},
+use bindings::Windows::Win32::{
+    Foundation::{CloseHandle, INVALID_HANDLE_VALUE},
+    System::{
+        Diagnostics::{
+            ToolHelp,
+            ToolHelp::{CreateToolhelp32Snapshot, Process32First, Process32Next, PROCESSENTRY32},
+        },
+        SystemServices::CHAR,
+        Threading::{OpenProcess, TerminateProcess, PROCESS_QUERY_INFORMATION, PROCESS_TERMINATE},
     },
-    SystemServices::{CHAR, INVALID_HANDLE_VALUE},
-    Threading::{OpenProcess, TerminateProcess, PROCESS_QUERY_INFORMATION, PROCESS_TERMINATE},
-    WindowsProgramming::CloseHandle,
 };
 use eyre::Result;
 

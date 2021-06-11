@@ -20,16 +20,16 @@ pub fn spawn() -> Receiver<Events> {
 
     rx
 }
-fn sleep() { thread::sleep(SLEEP_TIME) }
+fn sleep() { thread::sleep(SLEEP_TIME); }
 
 fn watch(tx: &Sender<Events>) {
     let mut state = true;
     loop {
         if state != league_exists(true) {
             if state {
-                tx.send(Events::Disconnected).unwrap()
+                tx.send(Events::Disconnected).unwrap();
             } else {
-                tx.send(Events::Connected).unwrap()
+                tx.send(Events::Connected).unwrap();
             }
             state = league_exists(true);
         }
