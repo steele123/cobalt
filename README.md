@@ -1,7 +1,7 @@
 # Cobalt
 
 ## Status
-Cobalt is still currently working and is able to dodge games, there is around 1,000 users that use cobalt and it seems to be working flawlessly!
+Cobalt is being archieved due to the patch of the method cobalt uses to dodge the lobby, I am sure that there is a work around but I don't have the time/willpower to find one
 
 ## Download?
 Download the launcher from my [website](https://steele.gg/tools/cobalt)
